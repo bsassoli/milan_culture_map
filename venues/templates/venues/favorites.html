@@ -1,0 +1,38 @@
+{% extends 'venues/layout.html' %}
+{% block body %}
+<div class="container">
+    <h2 class="title text-center">Le tue venue</h2>
+    <div class="container mt-3">
+        {% for venue in venues %}
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title">
+                    <a href="{%url 'venue' venue.name %}">
+                        {{ venue }}
+                        {% if user.is_vmanager %}
+                        {% if venue in user.vmanager.venue.all %}
+                        <span class="badge badge-pill badge-info">
+                            <i class="fas fa-user-cog" aria-hidden="true"></i>
+                        </span>
+                        {% endif %}
+                        {% endif %}
+                    </a>
+                </h4>
+                <h6 class="card-category">
+                    {{venue.category}}
+                </h6>
+                <p class="card-text">
+                    {{ venue.description|truncatewords:8 }}
+                </p>
+                <a href="{{venue.url}}" class="card-link">{{venue.url}}</a>
+            </div>
+            <p class="card-footer">
+                {{ venue.address }}
+            </p>
+        </div>
+        {% empty %}
+        <h3>Non hai ancora preferiti!</h3>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

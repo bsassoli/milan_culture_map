@@ -1,0 +1,21 @@
+{% extends 'venues/layout.html' %}
+{% block body %}
+<div class="jumbotron jumbotron-fluid text-center">
+    <h2>
+        Edit view for: {{ venue.name }}
+    </h2>
+    <address>
+        <p>
+            <strong>
+                {{ venue.address }}
+            </strong>
+        </p>
+    </address>
+    
+    <p class="text-justify ml-3 mr-3">
+        {{ venue.description}}
+    </p>
+
+</div>
+
+{% endblock %}

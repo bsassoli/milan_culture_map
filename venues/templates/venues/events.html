@@ -1,0 +1,12 @@
+{% extends 'venues/layout.html' %}
+{% block body %}
+{% for event in events %}
+<p>
+    {{event.venue}}
+</p>
+<p>
+    {{event.date}}
+    {{event.description}}
+</p>
+{% endfor %}
+{% endblock %}

@@ -1,0 +1,146 @@
+{% load static %}
+<!DOCTYPE html>
+
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="description" content="A map of cultural venues in the City of Milano, Italy">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    {% block title %}
+    <title>CultureMapMilano</title>
+    {% endblock %}
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+        integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <!-- Material Kit -->
+    <link href="{% static 'venues/assets/css/material-kit.css' %}" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css"
+        href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Roboto+Slab:400,700|Material+Icons" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css">
+    <script src="https://kit.fontawesome.com/125989d5dd.js" crossorigin="anonymous"></script>
+    <link href="{% static 'venues/styles.css' %}" rel="stylesheet">
+
+    {% block scripts %}
+    {% endblock %}
+</head>
+
+<body>
+
+    <nav class="navbar navbar-inverse bg-dark navbar-expand-lg sticky-top mb-0" id="navbar-default">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                CultureMapMilano
+            </a>
+            <ul class="navbar-nav mr-auto">
+            {% if user.is_authenticated %}
+                <li class="nav-item">
+                    <div class="dropdown">
+                        <button class="btn btn-round btn-info dropdown-toggle" type="button" id="dropdownMenuButton"
+                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            {% if user.is_staff %}
+                            <i class="fas fa-user-shield"></i>
+                            {% endif %}
+                            {% if user.is_vmanager %}
+                            <i class="fas fa-user-cog"></i>
+                            {% endif %}
+                            <strong>
+                                {{ user.username }}
+                            </strong>
+                        </button>
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                            <a class="dropdown-item" href="{% url 'favorites' %}">
+                                <i class="material-icons">apps</i>
+                                Le mie venues
+                            </a>                            
+                        </div>
+                    </div>
+                </li>
+                {% endif %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'news' %}">
+                        <i class="material-icons">feed</i>
+                        Notizie
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'events' %}">
+                        <i class="material-icons">event</i>
+                        Eventi
+                    </a>
+                </li>
+            </ul>            
+            <ul class="navbar-nav">
+                <!-- Uncomment this to implement search form in navbar
+                    <form class="form-inline my-2 my-lg-0">
+                        <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+                        <button class="btn btn-outline-success my-2 my-sm-0" type="submit"> <i
+                                class="fas fa-search"></i></button>
+                    </form>
+                -->
+                {% if user.is_authenticated %}
+                {% if user.is_staff %}
+                <li class="nav-item">
+                    <a class="btn btn-danger btn-raised btn-round" href="{% url 'map' %}">Aggiorna</a>
+                </li>
+                {% endif %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'logout' %}">
+                        <i class="material-icons">logout</i>
+                        Esci
+                    </a>
+                </li>
+                {% else %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'login' %}">
+                        <i class="material-icons">login</i>
+                        Entra</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'register' %}">
+                        <i class="material-icons">how_to_reg</i>
+                        Iscriviti</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'about' %}">
+                        <i class="material-icons">info</i>
+                        Scopri
+                    </a>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+    </nav>
+
+
+    {% block body %}
+    {% endblock %}
+
+    <script src="" async defer></script>
+
+    <!--   Core JS Files   -->
+    <script src="{% static 'venues/assets/js/core/jquery.min.js' %}" type="text/javascript"></script>
+    <script src="{% static 'venues/assets/js/core/popper.min.js' %}" type="text/javascript"></script>
+    <script src="{% static 'venues/assets/js/core/bootstrap-material-design.min.js' %}" type="text/javascript"></script>
+    <script src="{% static 'venues/assets/js/plugins/moment.min.js' %}"></script>
+    <!--	Plugin for the Datepicker, full documentation here: https://github.com/Eonasdan/bootstrap-datetimepicker -->
+    <script src="{% static 'venues/assets/js/plugins/bootstrap-datetimepicker.js' %}" type=" text/javascript"> </script>
+    <!--  Plugin for the Sliders, full documentation here: http://refreshless.com/nouislider/ -->
+    <script src="{% static 'venues/assets/js/plugins/nouislider.min.js'  %}" type=" text/javascript"> </script>
+    <!--  Google Maps Plugin  -->
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=YOUR_KEY_HERE"></script>
+    <!--	Plugin for Tags, full documentation here: https://github.com/bootstrap-tagsinput/bootstrap-tagsinputs  -->
+    <script src="{% static 'venues/assets/js/plugins/bootstrap-tagsinput.js' %}"></script>
+    <!--	Plugin for Select, full documentation here: http://silviomoreto.github.io/bootstrap-select -->
+    <script src="{% static 'venues/assets/js/plugins/bootstrap-selectpicker.js' %}" type="text/javascript"></script>
+    <!--	Plugin for Fileupload, full documentation here: http://www.jasny.net/bootstrap/javascript/#fileinput -->
+    <script src="{% static 'venues/assets/js/plugins/jasny-bootstrap.min.js' %}" type="text/javascript"></script>
+    <!-- Place this tag in your head or just before your close body tag. -->
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <!-- Control Center for Material Kit: parallax effects, scripts for the example pages etc -->
+    <script src="{% static 'venues/assets/js/material-kit.js' %}" type="text/javascript"></script>
+</body>
+
+</html>

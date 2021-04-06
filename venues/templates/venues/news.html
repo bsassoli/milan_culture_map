@@ -1,0 +1,11 @@
+{% extends 'venues/layout.html' %}
+{% block body %}
+    {% for article in news %}
+    <p>
+        {{article.venue}}
+    </p>
+    <p>
+        {{article.content}}
+    </p>
+    {% endfor %}
+{% endblock %}

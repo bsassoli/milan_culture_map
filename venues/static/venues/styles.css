@@ -1,0 +1,23 @@
+
+#venue-edit-container {
+    display: none;
+}
+
+#edit-button > * {
+    pointer-events: none;
+}
+
+body {
+    background-color: rgb(255, 255, 255);
+    color: rgb(5, 5, 5);
+}
+
+#rowmap {
+    background-color: red;
+    height: 9vw;
+    margin-top: 0;
+}
+
+iframe {
+    height: 90v;
+}

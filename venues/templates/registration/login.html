@@ -1,0 +1,29 @@
+{% extends "venues/layout.html" %}
+{% block body %}
+
+
+
+{% if message %}
+<div>{{ message }}</div>
+{% endif %}
+<p></p>
+<p></p>
+
+<div class="container w-75">
+    <h2 class="title">Entra</h2>
+    <form action="{% url 'login' %}" method="post">
+        {% csrf_token %}
+        <div class="fields">
+            <div class="form-group username">
+                <input autofocus class="form-control user-input" type="text" name="username" placeholder="nome utente">
+            </div>
+            <div class="form-group password">
+                <input class="form-control pass-input" type="password" name="password" placeholder="password">
+            </div>
+        </div>
+        <input class="btn btn-info btn-round" type="submit" value="Entra">
+    </form>
+    <p></p>
+    <p>Non hai un account? <a href="{% url 'register' %}">Iscriviti qui!</a></p>
+</div>
+{% endblock %}

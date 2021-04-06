@@ -1,0 +1,343 @@
+from django.contrib.auth import authenticate, login, logout
+from django.db import IntegrityError
+from django.http import HttpResponseRedirect, JsonResponse
+from django.shortcuts import render, get_object_or_404
+from django.urls import reverse
+from django.core.paginator import Paginator
+from django.contrib.auth.decorators import login_required, user_passes_test
+from django.views.generic import TemplateView
+
+import json
+import folium
+from folium.plugins import LocateControl, MarkerCluster, FeatureGroupSubGroup, Fullscreen, Search, BeautifyIcon
+from folium.map import Layer, FeatureGroup, LayerControl, Marker
+
+from .models import Venue, Category, User, VManager, News, Map, Event
+from .forms import VenueForm
+
+# Create your views here.
+
+
+def index(request):
+    mymap = get_object_or_404(Map).html
+    context = {'mymap': mymap}
+    return render(request, 'venues/index.html', context)
+
+
+@login_required
+@user_passes_test(lambda u: u.is_staff)
+def map(request):
+    icons = {
+        'Museo': {
+            'icon': 'university',
+            'prefix': 'fa',
+            'color': 'cadetblue'
+        },
+
+        'Biblioteca': {
+            'icon': 'building',
+            'prefix': 'fa',
+            'color': 'darkred'
+        },
+        'Spazio Espositivo': {
+            'icon': 'picture-o',
+            'prefix': 'fa',
+            'color': 'orange'
+        },
+        'Spazio ibrido ':
+        {
+            'icon': 'star',
+            'prefix': 'fa',
+            'color': 'blue'
+        },
+        'Centro culturale':
+        {
+            'icon': 'sign-in',
+            'prefix': 'fa',
+            'color': 'red'
+        },
+        'Teatro':
+        {
+            'icon': 'eye',
+            'prefix': 'fa',
+            'color': 'black'
+        },
+        'Spazio ibrido':  {
+            'icon': 'lightbulb-o',
+            'prefix': 'fa',
+            'color': 'lightgray'
+        },
+        'Live club':  {
+            'icon': 'music',
+            'prefix': 'fa',
+            'color': 'purple'
+        },
+        'Archivio':
+        {
+            'icon': 'archive',
+            'prefix': 'fa',
+            'color': 'beige'
+        },
+        'Istituto di cultura':
+        {
+            'icon': 'globe',
+            'prefix': 'fa',
+            'color': 'lightred'
+        },
+        'Galleria':
+        {
+            'icon': 'paint-brush',
+            'prefix': 'fa',
+            'color': 'darkgreen'
+        },
+        'Libreria':  {
+            'icon': 'book',
+            'prefix': 'fa',
+            'color': 'lightblue'
+        },
+        'Cinema':  {
+            'icon': 'video-camera',
+            'prefix': 'fa',
+            'color': 'darkpurple'
+
+        }}
+    # Creating Map object
+    milan_center = [45.46429322174771, 9.191872853615125]
+    m = folium.Map(location=milan_center, tiles='cartodbpositron',
+                   zoom_start=12, control_scale=True, height='90%')
+    Fullscreen(
+                title='Fullscreen',
+                title_cancel='Exit fullscreen',
+                force_separate_button=True
+                ).add_to(m)
+    # Create Folium cluster
+    cluster = MarkerCluster(name="Tutte le venues", options={
+                                'showCoverageOnHover': False,
+                                'zoomToBoundsOnClick': True,
+                                'spiderfyOnMaxZoom': False,
+                                'disableClusteringAtZoom': 15}, control=False)
+    # Add cluster to map
+    m.add_child(cluster)
+
+    # Add categories
+    layers = {}
+    for category in Category.objects.all():
+        layers[category.name] = FeatureGroupSubGroup(
+            group=cluster,
+            name=category.name
+            )
+        m.add_child(layers[category.name])
+
+    # Enable geolocation button on map.
+    LocateControl(auto_start=False, fly=True).add_to(m)
+
+    # Add html
+    for venue in Venue.objects.all():
+        name = venue.name
+        address = venue.address
+        subgroup_category = venue.category.name
+        location = [venue.latitude, venue.longitude]
+        page = f'venue/{name}'
+        image = venue.image.url
+        url = venue.url
+        html = folium.Html(
+            f"""
+        <div class="card card-profile card-plain">
+            <div class="card-header card-avatar">
+                <img class="img" src="{image}">
+            </div>
+            <div class="card-body ">
+                <h4 class="card-title">
+                  <a href="{page}">{name}</a></p>
+                </h4>
+                <h6 class="card-category text-muted">
+                  <i>Categoria: </i>{subgroup_category}
+                </h6>
+                    <p><a href='{url}' target='_blank'>Sito</a></p>
+            </div>
+            <div class="card-footer justify-content-center">
+                {address}
+            </div>
+        </div>
+    """, script=True)
+        category = icons[subgroup_category]
+        try:
+            category = icons[subgroup_category]
+            venue_marker = folium.Marker(
+                location=location,
+                tooltip=name,
+                popup=folium.Popup(html=html, max_width=600),
+                icon=folium.Icon(
+                    color=category['color'],
+                    icon=category['icon'],
+                    prefix=category['prefix']
+                    ),
+                )
+            layers[subgroup_category].add_child(venue_marker)
+        except Exception:
+            print('Problem')
+
+    # Add Layer Control to map
+    folium.LayerControl().add_to(m)
+    """
+    search = Search(layer=feature_collection,
+                    search_label='name',
+                    position='bottomleft',
+                    )
+    search.add_to(m)
+    """
+    mymap = m._repr_html_()
+
+    old_css = '<link rel = "stylesheet" href = "https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css"/> <link rel = "stylesheet" href = "https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css"/>'
+    mymap = mymap.replace(old_css, '')
+    mymap = mymap.replace('height: 100', 'height: 90')
+
+    context = {'mymap': mymap}
+
+    Map.objects.update_or_create(defaults={'html': mymap})
+    m.save('venues/templates/venues/map.html')
+
+    update_html('venues/templates/venues/map.html', [
+        '<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css"/>',
+        '<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">/'
+        ],
+        {
+            '<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>': """<link href="{% static 'venues/assets/css/material-kit.css' %}" rel="stylesheet" />\n"""
+            })
+
+    return render(request, 'venues/index.html', context)
+
+
+def login_view(request):
+    if request.method == "POST":
+        # Attempt to sign user in
+        username = request.POST["username"]
+        password = request.POST["password"]
+        user = authenticate(request, username=username, password=password)
+
+        # Check if authentication successful
+        if user is not None:
+            login(request, user)
+            return HttpResponseRedirect(reverse("index"))
+        else:
+            return render(request, "venues/login.html", {
+                "message": "Invalid username and/or password."
+            })
+    else:
+        return render(request, "venues/login.html")
+
+
+def logout_view(request):
+    logout(request)
+    return HttpResponseRedirect(reverse("venues/index"))
+
+
+def register(request):
+    if request.method == "POST":
+        username = request.POST["username"]
+        email = request.POST["email"]
+
+        # Ensure password matches confirmation
+        password = request.POST["password"]
+        confirmation = request.POST["confirmation"]
+        if password != confirmation:
+            return render(request, "venues/register.html", {
+                "message": "Passwords must match."
+            })
+
+        # Attempt to create new user
+        try:
+            user = User.objects.create_user(username, email, password)
+            user.save()
+
+        except IntegrityError:
+            return render(request, "venues/register.html", {
+                "message": "Username already taken."
+            })
+        login(request, user)
+        return HttpResponseRedirect(reverse("index"))
+    else:
+        return render(request, "venues/register.html")
+
+
+def registermanager(request):
+    if request.method == "POST":
+        username = request.POST["username"]
+        email = request.POST["email"]
+        venue = Venue.objects.get(name=request.POST["venue"])
+        # Ensure password matches confirmation
+        password = request.POST["password"]
+        confirmation = request.POST["confirmation"]
+        if password != confirmation:
+            return render(request, "venues/registermanager.html", {
+                'venues': Venue.objects.all(),
+                "message": "Passwords must match."
+            })
+
+        # Attempt to create new user
+        try:
+            user = User.objects.create_user(username, email, password)
+            manager = VManager(user=user)
+            user.is_vmanager = True
+            user.is_active = False
+            user.save()
+            manager.save()
+            manager.venue.add(venue)
+        except IntegrityError:
+            return render(request, "venues/registermanager.html", {
+                "message": "Username already taken.",
+                'venues': Venue.objects.all()
+            })
+        login(request, user)
+        return HttpResponseRedirect(reverse("index"))
+    else:
+        return render(request, "venues/registermanager.html", {
+            'venues': Venue.objects.all()
+        })
+
+
+def venue(request, venue):
+    form = VenueForm()
+    venue = get_object_or_404(Venue, name=venue)
+    news = venue.news.all().order_by('-date')
+    context = {'venue': venue,
+               'form': form,
+               'news': news,
+               }
+    return render(request, 'venues/venue.html', context)
+
+
+@login_required
+def edit(request):
+    if request.method == "POST":
+        data = json.loads(request.body)
+        venue = get_object_or_404(Venue, id=data['id'])
+        venue.description = data['description']
+        venue.url = data['url']
+        venue.address = data['address']
+        venue.save()
+        return JsonResponse(data, status=201)
+
+
+def about(request):
+    return render(request, 'venues/about.html')
+
+
+@login_required
+def favorites(request):
+    try:
+        venues = request.user.favorites.all()
+    except Exception:
+        venues = []
+
+    return render(request, 'venues/favorites.html', {'venues': venues})
+
+
+def news(request):
+    news = News.objects.all().order_by('-date')
+    return render(request, 'venues/news.html', {'news': news})
+
+
+def events(request):
+    events = Event.objects.all().order_by('-date')
+    return render(request, 'venues/events.html', {'events': events})

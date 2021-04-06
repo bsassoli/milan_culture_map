@@ -1,0 +1,114 @@
+{% extends 'venues/layout.html' %}
+{% load static %}
+{% block body %}
+
+<div class="container mt-3 cd-section">
+    <div class="container mt-0" id="venue-container">        
+        <div class="card card-profile card-plain mt-0">
+            <div class="row align-items-center">
+                <!-- <div class="col-md-2">
+                    <ul class="nav nav-pills nav-pills-rose flex-column">
+                        <li class="nav-item"><a class="nav-link active" href="#tab1" data-toggle="tab">Profile</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#tab2" data-toggle="tab">Settings</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#tab3" data-toggle="tab">Options</a></li>
+                    </ul>
+                </div>
+            -->
+                <div class="col-md-4 card-header card-header-image">
+                    <img src="{{ venue.image.url }}" />
+                </div>
+                <div class="col-md-8">
+                    <div class="card-body">
+                        <h2 class="card-title mt-0">
+                            {{ venue.name }}
+                            <a id="url" href="{{venue.url}}" target="blank">
+                                <i class="material-icons">language</i>
+                            </a>
+                            {% if user.is_vmanager %}
+                            {% if venue in user.vmanager.venue.all %}
+                            <button type="button" class="ml-1 btn btn-info btn-sm btn-round" id="edit-button"
+                                data-venue="{{venue.id}}" data-address="{{venue.address}}" data-url="{{venue.url}}"
+                                data-description="{{venue.description}}" data-name="{{venue.name}}">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            {% endif %}
+                            {% endif %}                        
+                        </h2>
+                        <h4 class="card-description text-justify" id="description">
+                            {% if venue.description|length != 0 %}
+                            {% if venue.description|wordcount > 40 %}
+                                {{ venue.description|truncatewords:40 }}
+                                <button class="btn btn-sm btn-secondary read-more" data-status="more"
+                                    data-less="{{ venue.description|truncatewords:25 }}"
+                                    data-description="{{venue.description}}">Leggi di più</button>
+                            {% endif %}
+                            {% else %}
+                            Descrizione non ancora disponibile per questa venue.
+                            {% endif %}
+                        </h4>
+                    </div>
+                    <div class="card-footer text-muted">
+                        <address>
+                        <p>
+                            {{venue.address}}
+                        </p>
+                        </address>                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container" id="venue-edit-container">
+        <form method="post" class="edit-form">
+            {% csrf_token %}
+            <h3>Modifica</h3>
+            <div class="form-group">
+                {{form.address}}
+            </div>
+            <div class="form-group">
+                {{form.url}}
+            </div>
+            <div class="form-group">
+                {{form.description}}
+            </div>
+            <button class="btn btn-primary btn-round" id="save-button" type="submit">Salva</button>
+        </form>
+    </div>
+</div>
+<div class="cd-section mt-0" id="section-news">
+    <div class="blogs-3 mt-0">
+        <div class="container mt-0" id="news-container">
+            <h2 class="mb-0">Notizie più recenti</h2>
+            {% if news|length == 0%}
+            <h3 class="text-info">Questa venue non ha ancora pubblicato notizie.</h3>
+            {% else %}
+            <div class="row">
+                {% for article in news %}
+                <div class="col-md-12 mt-0">
+                    <div class="card card-plain card-blog mt-0 mb-0">
+                        <div class="card-body">
+                            <h4 class="card-title">
+                                {{article.title}}
+                            </h4>
+                            <p class="card-description">
+                                {{ article.content }}
+                            </p>
+                        </div>
+                        <p class="card-footer">
+                            {{ article.date }}
+                        </p>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% if user.is_vmanager %}
+{% block script %}
+<script src="{% static 'venues/edit.js' %}"></script>
+{% endblock %}
+{% endif %}
+<script src="{% static 'venues/readmore.js' %}"></script>
+{% endblock %}
