@@ -197,14 +197,6 @@ def map(request):
     Map.objects.update_or_create(defaults={'html': mymap})
     m.save('venues/templates/venues/map.html')
 
-    update_html('venues/templates/venues/map.html', [
-        '<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css"/>',
-        '<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">/'
-        ],
-        {
-            '<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>': """<link href="{% static 'venues/assets/css/material-kit.css' %}" rel="stylesheet" />\n"""
-            })
-
     return render(request, 'venues/index.html', context)
 
 
