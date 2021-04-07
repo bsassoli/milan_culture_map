@@ -18,6 +18,7 @@ urlpatterns = [
     path("favorites", views.favorites, name="favorites"),
     path("news", views.news, name="news"),
     path("events", views.events, name="events"),
+    path("follow", views.follow, name="follow"),
     path('accounts/', include('django.contrib.auth.urls')),
 ]
 

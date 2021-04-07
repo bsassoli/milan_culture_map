@@ -9,6 +9,7 @@ from django.views.generic import TemplateView
 
 import json
 import folium
+import numpy as np
 from folium.plugins import LocateControl, MarkerCluster, FeatureGroupSubGroup, Fullscreen, Search, BeautifyIcon
 from folium.map import Layer, FeatureGroup, LayerControl, Marker
 
@@ -16,6 +17,12 @@ from .models import Venue, Category, User, VManager, News, Map, Event
 from .forms import VenueForm
 
 # Create your views here.
+
+
+def paginate(items, number):
+    objects = [item for item in items]
+    paginator = Paginator(objects, number)
+    return paginator
 
 
 def index(request):
@@ -103,8 +110,15 @@ def map(request):
         }}
     # Creating Map object
     milan_center = [45.46429322174771, 9.191872853615125]
+    
     m = folium.Map(location=milan_center, tiles='cartodbpositron',
-                   zoom_start=12, control_scale=True, height='90%')
+                   zoom_start=12, control_scale=True, height='90%',
+                   )
+    m.default_css = [('leaflet_css', 'https://cdn.jsdelivr.net/npm/leaflet@1.6.0/dist/leaflet.css'),
+                                   ('awesome_markers_font_css',
+                                    'https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css'),
+                                   ('awesome_markers_css', 'https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css'),
+                                   ('awesome_rotate_css', 'https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css')]
     Fullscreen(
                 title='Fullscreen',
                 title_cancel='Exit fullscreen',
@@ -115,7 +129,7 @@ def map(request):
                                 'showCoverageOnHover': False,
                                 'zoomToBoundsOnClick': True,
                                 'spiderfyOnMaxZoom': False,
-                                'disableClusteringAtZoom': 15}, control=False)
+                                'disableClusteringAtZoom': 17}, control=False)
     # Add cluster to map
     m.add_child(cluster)
 
@@ -130,13 +144,18 @@ def map(request):
 
     # Enable geolocation button on map.
     LocateControl(auto_start=False, fly=True).add_to(m)
-
+    # memoize locations
+    locations = []
     # Add html
     for venue in Venue.objects.all():
         name = venue.name
         address = venue.address
         subgroup_category = venue.category.name
         location = [venue.latitude, venue.longitude]
+        # check for location overlaps and if so perturb it minimally
+        if location in locations:
+            location[0] += np.random.uniform(0.0005, 10**(-20))-0.0000007
+        locations.append(location)
         page = f'venue/{name}'
         image = venue.image.url
         url = venue.url
@@ -148,7 +167,7 @@ def map(request):
             </div>
             <div class="card-body ">
                 <h4 class="card-title">
-                  <a href="{page}">{name}</a></p>
+                  <a href="{page}">{name}</a>            
                 </h4>
                 <h6 class="card-category text-muted">
                   <i>Categoria: </i>{subgroup_category}
@@ -321,8 +340,12 @@ def favorites(request):
         venues = request.user.favorites.all()
     except Exception:
         venues = []
-
-    return render(request, 'venues/favorites.html', {'venues': venues})
+    paginator = paginate(venues, 5)
+    page_number = request.GET.get('page')
+    page = paginator.get_page(page_number)
+    return render(request, 'venues/favorites.html', {
+        'venues': page
+        })
 
 
 def news(request):
@@ -333,3 +356,20 @@ def news(request):
 def events(request):
     events = Event.objects.all().order_by('-date')
     return render(request, 'venues/events.html', {'events': events})
+
+
+@login_required
+def follow(request):
+    if request.method == "POST":
+        data = json.loads(request.body)
+        print(data)
+        venue = Venue.objects.get(id=data['venue'])
+        print(venue)
+        if data['action'] == "follow":
+            print('adding')
+            request.user.favorites.add(venue.id)
+        else:
+            request.user.favorites.remove(venue.id)
+        print(request.user.favorites.all())
+        return JsonResponse(data, status=200)
+    

@@ -1,38 +1,95 @@
 {% extends 'venues/layout.html' %}
+{% load static %}
 {% block body %}
 <div class="container">
     <h2 class="title text-center">Le tue venue</h2>
-    <div class="container mt-3">
+    <div class="container mt-3 blogs-1">
         {% for venue in venues %}
-        <div class="card">
-            <div class="card-body">
-                <h4 class="card-title">
-                    <a href="{%url 'venue' venue.name %}">
-                        {{ venue }}
-                        {% if user.is_vmanager %}
-                        {% if venue in user.vmanager.venue.all %}
-                        <span class="badge badge-pill badge-info">
-                            <i class="fas fa-user-cog" aria-hidden="true"></i>
-                        </span>
+        <div class="card card-plain card-blog">
+            <div class="row blog-post">
+                <div class="col-md-4 card-header card-header-image no-shadow">
+                    <img class="img-thumbnail img-responsive h-100" src="{{venue.image.url}}">
+                </div>
+                <div class="col-md-8">
+                    <h6 class="card-category text-info">
+                        {{venue.category}}
+                    </h6>
+                    <h4 class="card-title">
+                        <a class="mr-0" href="{%url 'venue' venue.name %}">
+                            {{ venue }}
+                            
+                            {% if user.is_vmanager %}
+                            {% if venue in user.vmanager.venue.all %}
+                            <span class="badge badge-pill badge-info">
+                                <i class="fas fa-user-cog" aria-hidden="true"></i>
+                            </span>
+                            {% endif %}
+                            {% endif %}
+                        </a>
+                        {% if user.is_authenticated %}
+                            {% if venue in user.favorites.all %}
+                            <button class="btn btn-success btn-link text-info follow-button pl-1" id="follow-button"
+                                data-venue="{{venue.id}}" data-action="unfollow">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                            {% else %}
+                            <button class="btn btn-success btn-link text-info follow-button pl-1" id="follow-button"
+                                data-venue="{{venue.id}}" data-action="follow">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                            {% endif %}
                         {% endif %}
+                    </h4>
+                    <p class="card-description text-justify" id="description">
+                        {% if venue.description|length != 0 %}
+                        {% if venue.description|wordcount > 40 %}
+                        {{ venue.description|truncatewords:40 }}
+                        <button class="btn btn-sm btn-secondary read-more" data-status="more"
+                            data-less="{{ venue.description|truncatewords:25 }}"
+                            data-description="{{venue.description}}">Leggi di più</button>
                         {% endif %}
-                    </a>
-                </h4>
-                <h6 class="card-category">
-                    {{venue.category}}
-                </h6>
-                <p class="card-text">
-                    {{ venue.description|truncatewords:8 }}
-                </p>
-                <a href="{{venue.url}}" class="card-link">{{venue.url}}</a>
+                        {% else %}
+                        Descrizione non ancora disponibile per questa venue.
+                        {% endif %}
+                    </p>
+                    <a href="{{venue.url}}" class="card-link">{{venue.url}}</a>
+                    <p class="card-footer">
+                        {{ venue.address.strip }}
+                    </p>
+                </div>
             </div>
-            <p class="card-footer">
-                {{ venue.address }}
-            </p>
         </div>
         {% empty %}
         <h3>Non hai ancora preferiti!</h3>
         {% endfor %}
     </div>
 </div>
+<div class="container" id="pagination-container">
+    <nav aria-label="Page navigation example">
+        <ul class="pagination pagination-info pagination-sm justify-content-center">
+            {% if venues.has_previous %}
+            <li class="page-item"><a class="page-link" href="?page={{venues.previous_page_number}}"
+                    aria-label="Previous">&laquo;</a></li>
+            {% else %}
+            <li class="page-item disabled"><span class="page-link"> &laquo;</span></li>
+            {% endif %}
+            {% for page_num in venues.paginator.page_range %}
+            {% if venues.number == page_num %}
+            <li class="active page-item"><span class="page-link">{{ page_num }} <span
+                        class="sr-only">(current)</span></span></li>
+            {% else %}
+            <li class="page-item"><a class="page-link" href="?page={{page_num}}">{{ page_num }}</a></li>
+            {% endif %}
+            {% endfor %}
+            {% if venues.has_next %}
+            <li class="page-item" aria-label="Next"><a class="page-link"
+                    href="?page={{venues.next_page_number}}">&raquo;</a></li>
+            {% else %}
+            <li class="page-item disabled"><span class="page-link">&raquo;</span></li>
+            {% endif %}
+        </ul>
+    </nav>
+</div>
+<script src="{% static 'venues/readmore.js' %}"></script>
+<script src="{% static 'venues/follow.js' %}"></script>
 {% endblock %}

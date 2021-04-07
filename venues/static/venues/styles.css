@@ -7,6 +7,10 @@
     pointer-events: none;
 }
 
+.follow-button > * {
+    pointer-events: none;
+}
+
 body {
     background-color: rgb(255, 255, 255);
     color: rgb(5, 5, 5);
@@ -21,3 +25,4 @@ body {
 iframe {
     height: 90v;
 }
+

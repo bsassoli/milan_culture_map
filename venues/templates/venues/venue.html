@@ -3,7 +3,7 @@
 {% block body %}
 
 <div class="container mt-3 cd-section">
-    <div class="container mt-0" id="venue-container">        
+    <div class="container mt-0" id="venue-container">
         <div class="card card-profile card-plain mt-0">
             <div class="row align-items-center">
                 <!-- <div class="col-md-2">
@@ -21,6 +21,19 @@
                     <div class="card-body">
                         <h2 class="card-title mt-0">
                             {{ venue.name }}
+                            {% if user.is_authenticated %}
+                            {% if venue in user.favorites.all %}
+                            <button class="btn btn-success btn-link text-info follow-button pl-1" id="follow-button"
+                                data-venue="{{venue.id}}" data-action="unfollow">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                            {% else %}
+                            <button class="btn btn-success btn-link text-info follow-button pl-1" id="follow-button"
+                                data-venue="{{venue.id}}" data-action="follow">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                            {% endif %}
+                            {% endif %}
                             <a id="url" href="{{venue.url}}" target="blank">
                                 <i class="material-icons">language</i>
                             </a>
@@ -32,15 +45,15 @@
                                 <i class="fas fa-edit"></i>
                             </button>
                             {% endif %}
-                            {% endif %}                        
+                            {% endif %}
                         </h2>
                         <h4 class="card-description text-justify" id="description">
                             {% if venue.description|length != 0 %}
                             {% if venue.description|wordcount > 40 %}
-                                {{ venue.description|truncatewords:40 }}
-                                <button class="btn btn-sm btn-secondary read-more" data-status="more"
-                                    data-less="{{ venue.description|truncatewords:25 }}"
-                                    data-description="{{venue.description}}">Leggi di più</button>
+                            {{ venue.description|truncatewords:40 }}
+                            <button class="btn btn-sm btn-secondary read-more" data-status="more"
+                                data-less="{{ venue.description|truncatewords:25 }}"
+                                data-description="{{venue.description}}">Leggi di più</button>
                             {% endif %}
                             {% else %}
                             Descrizione non ancora disponibile per questa venue.
@@ -49,10 +62,10 @@
                     </div>
                     <div class="card-footer text-muted">
                         <address>
-                        <p>
-                            {{venue.address}}
-                        </p>
-                        </address>                        
+                            <p>
+                                {{venue.address}}
+                            </p>
+                        </address>
                     </div>
                 </div>
             </div>
@@ -111,4 +124,5 @@
 {% endblock %}
 {% endif %}
 <script src="{% static 'venues/readmore.js' %}"></script>
+<script src="{% static 'venues/follow.js' %}"></script>
 {% endblock %}
