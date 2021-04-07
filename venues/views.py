@@ -362,14 +362,10 @@ def events(request):
 def follow(request):
     if request.method == "POST":
         data = json.loads(request.body)
-        print(data)
         venue = Venue.objects.get(id=data['venue'])
-        print(venue)
         if data['action'] == "follow":
-            print('adding')
             request.user.favorites.add(venue.id)
         else:
             request.user.favorites.remove(venue.id)
-        print(request.user.favorites.all())
         return JsonResponse(data, status=200)
     
