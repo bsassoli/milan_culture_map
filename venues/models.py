@@ -19,7 +19,7 @@ class Category(models.Model):
 
 
 class Venue(models.Model):
-    name = models.CharField(max_length=100)
+    name = models.CharField()
     latitude = models.FloatField()
     longitude = models.FloatField()
     address = models.TextField()
