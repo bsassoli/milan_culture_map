@@ -133,17 +133,17 @@ USE_TZ = True
 
 
 # Uncomment this when deploying
-# PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
+PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
+
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
 
 # Uncomment this when deploying
-"""
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'static'),
 )
-"""
+
 # Uncomment this when deploying
-# django_on_heroku.settings(locals())
+django_on_heroku.settings(locals())
