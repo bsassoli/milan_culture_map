@@ -23,7 +23,7 @@ class Venue(models.Model):
     latitude = models.FloatField()
     longitude = models.FloatField()
     address = models.TextField()
-    url = models.URLField()
+    url = models.URLField(max_length=200)
     category = models.ForeignKey(
         Category, on_delete=models.RESTRICT, related_name='venues'
         )
@@ -60,7 +60,7 @@ class Event(models.Model):
     author = models.ForeignKey(VManager, on_delete=models.RESTRICT)
     venue = models.ForeignKey(
         Venue, related_name='event', on_delete=models.CASCADE)
-    title = models.TextField(max_length=200)
+    title = models.TextField(max_length=300)
     date = models.DateTimeField(auto_now_add=True)
     description = models.TextField()
 
@@ -72,7 +72,7 @@ class News(models.Model):
     author = models.ForeignKey(VManager, on_delete=models.RESTRICT)
     venue = models.ForeignKey(Venue, related_name='news',
                               on_delete=models.CASCADE)
-    title = models.TextField(max_length=200)
+    title = models.TextField(max_length=300)
     date = models.DateTimeField(auto_now_add=True)
     content = models.TextField()
 
