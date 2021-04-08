@@ -333,6 +333,7 @@ def follow(request):
     if request.method == "POST":
         data = json.loads(request.body)
         venue = Venue.objects.get(id=data["venue"])
+        data['name'] = venue.name
         if data["action"] == "follow":
             request.user.favorites.add(venue.id)
         else:

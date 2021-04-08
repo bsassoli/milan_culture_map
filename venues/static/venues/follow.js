@@ -2,13 +2,12 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('.follow-button').forEach(element =>
         element.addEventListener('click', (e) => {
             var follow_btn = e.target;
-            if (follow_btn.dataset.action === 'unfollow') {                
+            if (follow_btn.dataset.action === 'unfollow') {
                 data = JSON.stringify({
                     'action': 'unfollow',
                     'venue': follow_btn.dataset.venue,
                 });
-            } 
-            else {
+            } else {
                 data = JSON.stringify({
                     'action': 'follow',
                     'venue': follow_btn.dataset.venue,
@@ -30,8 +29,22 @@ function follow(data) {
             body: data,
             credentials: 'same-origin'
         })
-    window.location.reload() // To refresh page.  
-        
+        .then(response => response.json())
+        .then(data => {
+
+            var venue = data.name;
+            let state = 'aggiunta ai';
+            if (data.action === "unfollow") {
+                state = 'rimossa dai'
+            };
+            let text = `La venue ${venue} è stata ${state} preferiti.`;
+            $(".modal-body").html(text);
+            $('#follow-modal').modal();
+            $('#follow-modal').on('hidden.bs.modal', function (e) {
+                window.location.reload();
+            })
+        })
+
 }
 
 
