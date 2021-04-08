@@ -16,6 +16,6 @@ for index, row in df.iterrows():
         venue = Venue(category=category, name=name, latitude=latitude,
                       longitude=longitude, address=address, url=url)
         venue.save()
-    except:
+    except Exception:
         print(name, row['category'])
     
