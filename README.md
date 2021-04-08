@@ -1,7 +1,5 @@
-# culturemap_app
+# culturemapp
 A web app for cultural venues in Milan.
-
-
 
 # Stack 
 

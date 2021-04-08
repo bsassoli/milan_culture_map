@@ -1,11 +1,35 @@
 {% extends 'venues/layout.html' %}
 {% block body %}
-    {% for article in news %}
-    <p>
-        {{article.venue}}
-    </p>
-    <p>
-        {{article.content}}
-    </p>
-    {% endfor %}
+
+<div class="container" id="news-container">
+    <h2 class="mb-0 text-center">
+        Notizie più recenti
+    </h2>
+    <div class="blogs-1">
+        <div class="col-md-12 ml-auto mr-auto">
+            {% for article in news %}
+            <div class="card card-plain card-blog mt-0">
+                <div class="row">
+                    <div class="col-md-12 ml-auto mr-auto">
+                        <div class="card-body">
+                            <h4 class="card-category">
+                                {{article.venue}}
+                            </h4>
+                            <h3 class="card-title">
+                                {{article.title}}
+                            </h3>
+                            <p class="card-text">
+                                {{ article.content }}
+                            </p>
+                        </div>
+                        <p class="card-footer">
+                            {{ article.date }}
+                        </p>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

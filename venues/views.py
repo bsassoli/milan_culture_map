@@ -33,6 +33,7 @@ def index(request):
 
 @login_required
 @user_passes_test(lambda u: u.is_staff)
+# Admin users or staff users can update/create maps
 def map(request):
     icons = {
         'Museo': {
@@ -114,16 +115,19 @@ def map(request):
     m = folium.Map(location=milan_center, tiles='cartodbpositron',
                    zoom_start=12, control_scale=True, height='90%',
                    )
+    # Overriding default CSS which will interfere with navbar
     m.default_css = [('leaflet_css', 'https://cdn.jsdelivr.net/npm/leaflet@1.6.0/dist/leaflet.css'),
                                    ('awesome_markers_font_css',
                                     'https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css'),
                                    ('awesome_markers_css', 'https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css'),
                                    ('awesome_rotate_css', 'https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css')]
+    # Add fullscreen button
     Fullscreen(
                 title='Fullscreen',
                 title_cancel='Exit fullscreen',
                 force_separate_button=True
                 ).add_to(m)
+    
     # Create Folium cluster
     cluster = MarkerCluster(name="Tutte le venues", options={
                                 'showCoverageOnHover': False,
@@ -144,18 +148,22 @@ def map(request):
 
     # Enable geolocation button on map.
     LocateControl(auto_start=False, fly=True).add_to(m)
-    # memoize locations
+    
+    # memoize locations for avoiding overlapping markers later
     locations = []
-    # Add html
+    
+    # Add html and create markers
     for venue in Venue.objects.all():
         name = venue.name
         address = venue.address
         subgroup_category = venue.category.name
         location = [venue.latitude, venue.longitude]
+        
         # check for location overlaps and if so perturb it minimally
         if location in locations:
             location[0] += np.random.uniform(0.0005, 10**(-20))-0.0000007
         locations.append(location)
+        
         page = f'venue/{name}'
         image = venue.image.url
         url = venue.url
@@ -205,6 +213,7 @@ def map(request):
                     )
     search.add_to(m)
     """
+    # Map model currently unused 
     mymap = m._repr_html_()
 
     old_css = '<link rel = "stylesheet" href = "https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css"/> <link rel = "stylesheet" href = "https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css"/>'
@@ -214,6 +223,8 @@ def map(request):
     context = {'mymap': mymap}
 
     Map.objects.update_or_create(defaults={'html': mymap})
+    
+    # Save map for rendering as include 
     m.save('venues/templates/venues/map.html')
 
     return render(request, 'venues/index.html', context)
@@ -271,6 +282,8 @@ def register(request):
         return render(request, "venues/register.html")
 
 
+# Venue managers will require to be flagged as active by admin
+# They will have access to venue editing for their venues
 def registermanager(request):
     if request.method == "POST":
         username = request.POST["username"]
