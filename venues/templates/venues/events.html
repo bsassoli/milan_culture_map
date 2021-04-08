@@ -1,12 +1,36 @@
 {% extends 'venues/layout.html' %}
 {% block body %}
-{% for event in events %}
-<p>
-    {{event.venue}}
-</p>
-<p>
-    {{event.date}}
-    {{event.description}}
-</p>
-{% endfor %}
+<div class="container" id="news-container">
+    <h2 class="mb-0 text-center">
+        Prossimi eventi
+    </h2>
+    <div class="blogs-1">
+        <div class="col-md-12 ml-auto mr-auto">
+            {% for event in events %}
+            <div class="card card-plain card-blog mt-0">
+                <div class="row">
+                    <div class="col-md-12 ml-auto mr-auto">
+                        <div class="card-body">
+                            <h4 class="card-category">
+                                <a href="{{venue.url}}">
+                                    {{event.venue}}
+                                </a>
+                            </h4>
+                            <h3 class="card-title">
+                                {{event.title}}
+                            </h3>
+                            <p class="card-text">
+                                {{ event.description }}
+                            </p>
+                        </div>
+                        <p class="card-footer">
+                            {{ event.date }}
+                        </p>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
