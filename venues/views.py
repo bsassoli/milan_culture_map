@@ -381,4 +381,3 @@ def follow(request):
         else:
             request.user.favorites.remove(venue.id)
         return JsonResponse(data, status=200)
-    
