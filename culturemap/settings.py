@@ -91,19 +91,19 @@ LOGOUT_REDIRECT_URL = 'index'
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
 # Use this locally
-"""
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-"""
-# Use for production
 
+# Use for production
+"""
 DATABASES = {}
 DATABASES['default'] = dj_database_url.config(conn_max_age=600)
-
+"""
 
 # Define AuthUserModel
 AUTH_USER_MODEL = 'venues.User'
@@ -153,18 +153,18 @@ STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
 
 # Uncomment this when deploying
-
+"""
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'static'),
 )
-
-
-# Uncomment this when deploying
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+"""
 
 # Uncomment this when deploying
-django_on_heroku.settings(locals())
+# STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Uncomment this when deploying
-options = DATABASES['default'].get('OPTIONS', {})
-options.pop('sslmode', None)
+# django_on_heroku.settings(locals())
+
+# Uncomment this when deploying
+# options = DATABASES['default'].get('OPTIONS', {})
+# options.pop('sslmode', None)
