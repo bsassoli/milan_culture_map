@@ -23,7 +23,7 @@ class Venue(models.Model):
     latitude = models.FloatField()
     longitude = models.FloatField()
     address = models.TextField()
-    url = models.URLField()
+    url = models.URLField(max_length=300)
     category = models.ForeignKey(
         Category, on_delete=models.RESTRICT, related_name='venues'
         )
