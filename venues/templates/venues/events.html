@@ -12,7 +12,7 @@
                     <div class="col-md-12 ml-auto mr-auto">
                         <div class="card-body">
                             <h4 class="card-category">
-                                <a href="{%url 'venue' venue.name %}">
+                                <a href="{% url 'venue' event.venue.name %}">
                                     {{event.venue}}
                                 </a>
                             </h4>

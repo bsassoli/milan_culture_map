@@ -13,7 +13,7 @@
                     <div class="col-md-12 ml-auto mr-auto">
                         <div class="card-body">
                             <h4 class="card-category">
-                                <a href="{{article.venue.url}}">
+                                <a href="{% url 'venue' article.venue.name %}">
                                     {{article.venue}}
                                 </a>
                             </h4>
