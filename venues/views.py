@@ -170,7 +170,7 @@ def map(request):
     folium.LayerControl().add_to(m)
     
     search = Search(layer=cluster, search_label='name', position='topright',
-                placeholder="Cerca")
+                    placeholder="Cerca", search_zoom=16)
     search.add_to(m)
     
     # Map model currently unused
