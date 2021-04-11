@@ -1,0 +1,15 @@
+{% extends 'venues/layout.html' %}
+{% block body %}
+<div class="container justify-content-center">
+    
+    {{ calendar }}
+</div>   
+<p>
+<a href="{% url 'calendar' %}?{{ prev_month }}">
+    Previous Month
+</a>
+<a href="{% url 'calendar' %}?{{ next_month }}">
+    Next Month
+</a>
+</p>
+{% endblock %}

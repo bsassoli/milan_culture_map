@@ -2,10 +2,12 @@ from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
 from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import render, get_object_or_404
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required, user_passes_test
-from django.views.generic import TemplateView
+from django.views.generic import TemplateView, ListView
+from django.utils.safestring import mark_safe
+
 
 import json
 import folium
@@ -18,12 +20,15 @@ from folium.plugins import (
     Search,
     BeautifyIcon,
 )
+
 from folium.map import Layer, FeatureGroup, LayerControl, Marker
 
 from .models import Venue, Category, User, VManager, News, Map, Event
 from .forms import VenueForm
-
+from .utils import Calendar
 from .constants import ICONS
+from datetime import datetime, timedelta
+import calendar
 
 # Create your views here.
 
@@ -44,7 +49,7 @@ def index(request):
 @user_passes_test(lambda u: u.is_staff)
 # Admin users or staff users can update/create maps
 def map(request):
-    
+
     # Creating Map object
     milan_center = [45.46429322174771, 9.191872853615125]
 
@@ -73,7 +78,9 @@ def map(request):
     ]
     # Add fullscreen button
     Fullscreen(
-        title="Fullscreen", title_cancel="Exit fullscreen", force_separate_button=True
+        title="Fullscreen",
+        title_cancel="Exit fullscreen",
+        force_separate_button=True
     ).add_to(m)
 
     # Create Folium cluster
@@ -153,6 +160,7 @@ def map(request):
                     icon=category["icon"],
                     prefix=category["prefix"],
                 ),
+                name=name,
             )
             layers[subgroup_category].add_child(venue_marker)
         except Exception:
@@ -160,19 +168,13 @@ def map(request):
 
     # Add Layer Control to map
     folium.LayerControl().add_to(m)
-    """
-    search = Search(layer=feature_collection,
-                    search_label='name',
-                    position='bottomleft',
-                    )
+    
+    search = Search(layer=cluster, search_label='name', position='topright',
+                placeholder="Cerca")
     search.add_to(m)
-    """
+    
     # Map model currently unused
     mymap = m._repr_html_()
-
-    old_css = '<link rel = "stylesheet" href = "https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css"/> <link rel = "stylesheet" href = "https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css"/>'
-    mymap = mymap.replace(old_css, "")
-    mymap = mymap.replace("height: 100", "height: 90")
 
     context = {"mymap": mymap}
 
@@ -220,7 +222,9 @@ def register(request):
         confirmation = request.POST["confirmation"]
         if password != confirmation:
             return render(
-                request, "venues/register.html", {"message": "Passwords must match."}
+                request, "venues/register.html", {
+                    "message": "Passwords must match."
+                    }
             )
 
         # Attempt to create new user
@@ -230,7 +234,9 @@ def register(request):
 
         except IntegrityError:
             return render(
-                request, "venues/register.html", {"message": "Username already taken."}
+                request, "venues/register.html", {
+                    "message": "Username already taken."
+                    }
             )
         login(request, user)
         return HttpResponseRedirect(reverse("index"))
@@ -251,8 +257,10 @@ def registermanager(request):
         if password != confirmation:
             return render(
                 request,
-                "venues/registermanager.html",
-                {"venues": Venue.objects.all(), "message": "Passwords must match."},
+                "venues/registermanager.html", {
+                    "venues": Venue.objects.all(),
+                    "message": "Passwords must match."
+                },
             )
 
         # Attempt to create new user
@@ -267,14 +275,19 @@ def registermanager(request):
         except IntegrityError:
             return render(
                 request,
-                "venues/registermanager.html",
-                {"message": "Username already taken.", "venues": Venue.objects.all()},
+                "venues/registermanager.html", {
+                    "message": "Username already taken.",
+                    "venues": Venue.objects.all()
+                    },
             )
         login(request, user)
         return HttpResponseRedirect(reverse("index"))
     else:
         return render(
-            request, "venues/registermanager.html", {"venues": Venue.objects.all()}
+            request,
+            "venues/registermanager.html", {
+                "venues": Venue.objects.all()
+                }
         )
 
 
@@ -339,3 +352,41 @@ def follow(request):
         else:
             request.user.favorites.remove(venue.id)
         return JsonResponse(data, status=200)
+
+
+class CalendarView(ListView):
+    model = Event
+    template_name = 'venues/calendar.html'
+    success_url = reverse_lazy("calendar")
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        d = get_date(self.request.GET.get('month', None))
+        cal = Calendar(d.year, d.month)
+        html_cal = cal.formatmonth(withyear=True)
+        context['calendar'] = mark_safe(html_cal)
+        context['prev_month'] = prev_month(d)
+        context['next_month'] = next_month(d)
+        return context
+
+
+def get_date(req_day):
+    if req_day:
+        year, month = (int(x) for x in req_day.split('-'))
+        return datetime(year, month, day=1)
+    return datetime.today()
+
+
+def prev_month(d_obj):
+    first = d_obj.replace(day=1)
+    prev_month = first - timedelta(days=1)
+    month = 'month=' + str(prev_month.year) + '-' + str(prev_month.month)
+    return month
+
+
+def next_month(d_obj):
+    days_in_month = calendar.monthrange(d_obj.year, d_obj.month)[1]
+    last = d_obj.replace(day=days_in_month)
+    next_month = last + timedelta(days=1)
+    month = 'month=' + str(next_month.year) + '-' + str(next_month.month)
+    return month
