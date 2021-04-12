@@ -269,3 +269,9 @@ def next_month(d_obj):
     next_month = last + timedelta(days=1)
     month = 'month=' + str(next_month.year) + '-' + str(next_month.month)
     return month
+
+
+def managed(request):
+    manager = VManager.objects.get(user=request.user)
+    context = {"venues": manager.venue.all()}
+    return render(request, 'venues/managed.html', context)

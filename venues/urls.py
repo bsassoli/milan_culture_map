@@ -20,6 +20,7 @@ urlpatterns = [
     path("events", views.events, name="events"),
     path("follow", views.follow, name="follow"),
     path('calendar/', views.CalendarView.as_view(), name='calendar'),
+    path('managed', views.managed, name="managed"),
     path('accounts/', include('django.contrib.auth.urls')),
 ]
 

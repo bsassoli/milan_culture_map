@@ -60,8 +60,7 @@
                             </strong>
                         </button>
                         <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                            <a class="dropdown-item" href="{% url 'favorites' %}">
-                                <i class="material-icons">apps</i>
+                            <a class="dropdown-item" href="{% url 'managed' %}">            
                                 Le mie venues
                             </a>                            
                         </div>
@@ -80,6 +79,14 @@
                         Eventi
                     </a>
                 </li>
+                {% if user.is_authenticated %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'favorites' %}">
+                        <i class="material-icons">apps</i>
+                        Preferiti
+                    </a>
+                </li>
+                {% endif %}
             </ul>            
             <ul class="navbar-nav">
                 <!-- Uncomment this to implement search form in navbar
@@ -90,11 +97,11 @@
                     </form>
                 -->
                 {% if user.is_authenticated %}
-                {% if user.is_staff %}
-                <li class="nav-item">
-                    <a class="btn btn-danger btn-raised btn-round" href="{% url 'map' %}">Aggiorna</a>
-                </li>
-                {% endif %}
+                    {% if user.is_staff %}
+                    <li class="nav-item">
+                        <a class="btn btn-danger btn-raised btn-round" href="{% url 'map' %}">Aggiorna</a>
+                    </li>
+                    {% endif %}
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'logout' %}">
                         <i class="material-icons">logout</i>
