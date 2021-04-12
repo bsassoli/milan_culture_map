@@ -13,3 +13,7 @@ ICONS = {
     "Libreria": {"icon": "book", "prefix": "fa", "color": "lightblue"},
     "Cinema": {"icon": "video-camera", "prefix": "fa", "color": "darkpurple"},
 }
+
+MILAN_CENTER = [45.46429322174771, 9.191872853615125]
+
+

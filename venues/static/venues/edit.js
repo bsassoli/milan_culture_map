@@ -1,8 +1,8 @@
 document.addEventListener('DOMContentLoaded', function (e) {
-    
+
     let edit_button = document.querySelector('#edit-button');
     let save_button = document.querySelector('#save-button');
-    
+
     edit_button.addEventListener('click', function () {
         let venue_data = edit_button.dataset;
         document.querySelector('#venue-container').style.display = 'none';
@@ -22,9 +22,9 @@ document.addEventListener('DOMContentLoaded', function (e) {
         url_field.value = venue_data.url;
         url_field.style.color = 'grey';
 
-        
+
         save_button.addEventListener('click', element => {
-            
+
             let csrftoken = getCookie('csrftoken');
             let name = venue_data.name;
             let id = document.querySelector('#edit-button').dataset.venue;
@@ -36,7 +36,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
                 'url': url_field.value,
             });
             window.event.preventDefault();
-            
+
             fetch('/edit', {
                     method: 'POST',
                     headers: {
@@ -52,10 +52,14 @@ document.addEventListener('DOMContentLoaded', function (e) {
                     edit_button.dataset.address = data.address;
                     edit_button.dataset.url = data.url;
                     edit_button.dataset.description = data.description;
-                    document.querySelector('address').innerHTML=data.address;
+                    document.querySelector('address').innerHTML = data.address;
                     document.querySelector('#url').setAttribute('href', data.url);
-                    document.querySelector('#description').innerHTML=data.description;
+                    document.querySelector('#description').innerHTML = data.description;
                     document.querySelector('#venue-container').style.display = 'block';
+                    var venue = data.name;
+                    let text = `La venue ${venue} è stata modificata con successo.`;
+                    $(".modal-body").html(text);
+                    $('#edit-modal').modal();
                 })
         })
     })
