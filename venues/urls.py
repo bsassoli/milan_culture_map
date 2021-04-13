@@ -21,6 +21,9 @@ urlpatterns = [
     path("follow", views.follow, name="follow"),
     path('calendar/', views.CalendarView.as_view(), name='calendar'),
     path('managed', views.managed, name="managed"),
+    path('post_news/<str:user>', views.post_news, name="post_news"),
+    path('post_event/<str:user>', views.post_event, name="post_event"),
+    path('profile/<str:user>', views.profile, name="profile"),
     path('accounts/', include('django.contrib.auth.urls')),
 ]
 

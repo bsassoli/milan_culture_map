@@ -64,8 +64,11 @@ class Venue(models.Model):
 
 class VManager(models.Model):
     user = models.OneToOneField(
-        settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
-        primary_key=True, default=""
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        primary_key=True, 
+        default="",
+        related_name="vmanager",
     )
 
     venue = models.ManyToManyField(
@@ -82,16 +85,26 @@ class VManager(models.Model):
 
 
 class Event(models.Model):
-    author = models.ForeignKey(VManager, on_delete=models.RESTRICT)
+    author = models.ForeignKey(
+        VManager,
+        on_delete=models.RESTRICT
+    )
+    
     venue = models.ForeignKey(
-        Venue, related_name="event", on_delete=models.CASCADE
-        )
+        Venue,
+        related_name="event",
+        on_delete=models.CASCADE
+    )
+
     title = models.TextField()
+
     date = models.DateTimeField(default=datetime.date.today)
+
     description = models.TextField()
 
     def __str__(self):
         return f"{self.title} di {self.venue} il {self.date}"
+    
     @property
     def get_html_url(self):
         url = reverse('event_edit', args=(self.id,))
@@ -99,11 +112,16 @@ class Event(models.Model):
 
 
 class News(models.Model):
-    author = models.ForeignKey(VManager, on_delete=models.RESTRICT)
+    author = models.ForeignKey(
+        VManager,
+        on_delete=models.RESTRICT,
+    )
 
     venue = models.ForeignKey(
-        Venue, related_name="news", on_delete=models.CASCADE
-        )
+        Venue,
+        related_name="news",
+        on_delete=models.CASCADE
+    )
 
     title = models.TextField()
 

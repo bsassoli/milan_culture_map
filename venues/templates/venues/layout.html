@@ -49,20 +49,23 @@
                     <div class="dropdown">
                         <button class="btn btn-round btn-info dropdown-toggle" type="button" id="dropdownMenuButton"
                             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            {% if user.is_staff %}
-                            <i class="fas fa-user-shield"></i>
-                            {% endif %}
-                            {% if user.is_vmanager %}
-                            <i class="fas fa-user-cog"></i>
-                            {% endif %}
-                            <strong>
-                                {{ user.username }}
-                            </strong>
+                                {% if user.is_staff %}
+                                <i class="fas fa-user-shield"></i>
+                                {% endif %}
+                                {% if user.is_vmanager %}
+                                <i class="fas fa-user-cog"></i>
+                                {% endif %}
+                                <strong>
+                                    {{ user.username }}
+                                </strong>
                         </button>
                         <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                             <a class="dropdown-item" href="{% url 'managed' %}">            
                                 Le mie venues
                             </a>                            
+                            <a class="dropdown-item" href="{% url 'profile' user %}">Account</a>
+                            <a class="dropdown-item" href="{% url 'post_news' user %}"> Aggiungi articolo</a>
+                            <a class="dropdown-item" href="{% url 'post_event' user %}">Aggiungi evento</a>
                         </div>
                     </div>
                 </li>

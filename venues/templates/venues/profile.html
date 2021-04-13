@@ -1,0 +1,21 @@
+{% extends 'venues/layout.html' %}
+{% load static %}
+{% block body %}
+<div class="container">
+    <div class="card card-profile card-plain">
+        <div class="card-body ">
+            <h4 class="card-title">{{ user.username }}</h4>
+            <h6 class="card-category text-muted">Testo</h6>
+            <p class="card-description">
+                I love you like Kanye loves Kanye. Don't be scared of the truth because we need to restart the human
+                foundation.
+            </p>
+        </div>
+        <div class="card-footer justify-content-center">
+            <a href="#pablo" class="btn btn-just-icon btn-link btn-facebook"><i class="fa fa-facebook-square"></i></a>
+            <a href="#pablo" class="btn btn-just-icon btn-link btn-dribbble"><i class="fa fa-dribbble"></i></a>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

@@ -184,12 +184,15 @@ def make_map(center=MILAN_CENTER):
             </div>
             <div class="card-body ">
                 <h4 class="card-title">
-                  <a href="{page}">{name}</a>
+                  <a href="{page}">
+                  {name}
+                  <i class="fas fa-info-circle"></i>
+                  </a>
                 </h4>
                 <h6 class="card-category text-muted">
                   <i>Categoria: </i>{subgroup_category}
                 </h6>
-                    <p><a href='{url}' target='_blank'>Sito</a></p>
+                    
             </div>
             <div class="card-footer justify-content-center">
                 {address}

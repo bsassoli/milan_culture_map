@@ -24,7 +24,7 @@ from folium.plugins import (
 from folium.map import Layer, FeatureGroup, LayerControl, Marker
 
 from .models import Venue, Category, User, VManager, News, Map, Event
-from .forms import VenueForm
+from .forms import VenueForm, NewsForm, EventForm
 from .utils import Calendar, make_map
 from .constants import ICONS
 from datetime import datetime, timedelta
@@ -216,7 +216,7 @@ def news(request):
 
 
 def events(request):
-    events = Event.objects.all().order_by("-date")
+    events = Event.objects.all().order_by("date")
     return render(request, "venues/events.html", {"events": events})
 
 
@@ -271,7 +271,58 @@ def next_month(d_obj):
     return month
 
 
+@login_required
+@user_passes_test(lambda u: u.is_vmanager)
 def managed(request):
     manager = VManager.objects.get(user=request.user)
     context = {"venues": manager.venue.all()}
     return render(request, 'venues/managed.html', context)
+
+
+def profile(request, user):
+    return render(request, 'venues/profile.html')
+
+@login_required
+@user_passes_test(lambda u: u.is_vmanager)
+def post_event(request, user):
+    if request.method == 'POST':
+        data = request.POST
+        date = data['date'].strip('""') 
+        date = datetime.strptime(date, "%Y/%m/%d %H:%M")
+        author = request.user.vmanager
+        event = Event(
+            author=author,
+            description=data['description'],    
+            title=data['title'],
+            venue=Venue.objects.get(id=data['venue']),
+            date=date
+        )
+        event.save()
+        return HttpResponseRedirect(reverse('events'))
+
+    manager = get_object_or_404(VManager, user=request.user)
+    form = EventForm()
+    form.fields['venue'].queryset = manager.venue.all()
+    context = {"form": form}
+    return render(request, "venues/post_event.html", context)
+
+
+@login_required
+@user_passes_test(lambda u: u.is_vmanager)
+def post_news(request, user):
+    if request.method == 'POST':
+        data = request.POST
+        author = request.user.vmanager
+        article = News(
+            author=author,
+            content=data['content'],    
+            title=data['title'],
+            venue=Venue.objects.get(id=data['venue']),
+        )
+        article.save()
+        return HttpResponseRedirect(reverse('news'))
+    manager = get_object_or_404(VManager, user=request.user)
+    form = NewsForm()
+    form.fields['venue'].queryset = manager.venue.all()
+    context = {"form": form, }
+    return render(request, "venues/post_news.html", context)
