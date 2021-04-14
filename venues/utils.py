@@ -1,24 +1,19 @@
 import functools
-from PIL import Image
-from datetime import datetime, timedelta
-from calendar import HTMLCalendar
-
-from .models import Event, Category, Venue
-from .constants import MILAN_CENTER, ICONS
-import json
 import folium
 import numpy as np
+import os
+from PIL import Image
+from calendar import HTMLCalendar
 from folium.plugins import (
     LocateControl,
     MarkerCluster,
     FeatureGroupSubGroup,
     Fullscreen,
     Search,
-    BeautifyIcon,
 )
-
-from folium.map import Layer, FeatureGroup, LayerControl, Marker
-
+from geopy.geocoders import Here
+from .models import Event, Category, Venue
+from .constants import MILAN_CENTER, ICONS
 
 # code from https://stackoverflow.com/a/30462851
 
@@ -189,10 +184,9 @@ def make_map(center=MILAN_CENTER):
                   <i class="fas fa-info-circle"></i>
                   </a>
                 </h4>
-                <h6 class="card-category text-muted">
-                  <i>Categoria: </i>{subgroup_category}
+                <h6 class="card-category">
+                  {subgroup_category}
                 </h6>
-                    
             </div>
             <div class="card-footer justify-content-center">
                 {address}
@@ -227,3 +221,20 @@ def make_map(center=MILAN_CENTER):
     search.add_to(m)
 
     return m
+
+def find_coordinates(address: str) -> list:
+    """Return coordinates of an address from Here.
+
+    Args:
+        address (str): the address to be searched
+
+    Returns:
+        list: a list of [latitude, longitude]
+    """
+    # Choosing geolocation API
+    geolocator = Here(apikey=os.environ['HERE_API'])
+    try:
+        coordinates = geolocator.geocode(address)
+        return [coordinates.latitude, coordinates.longitude]
+    except Exception:
+        return "Not found"

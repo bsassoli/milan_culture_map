@@ -5,30 +5,17 @@ from django.shortcuts import render, get_object_or_404
 from django.urls import reverse, reverse_lazy
 from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required, user_passes_test
-from django.views.generic import TemplateView, ListView
+from django.views.generic import ListView
 from django.utils.safestring import mark_safe
 
-
 import json
-import folium
-import numpy as np
-from folium.plugins import (
-    LocateControl,
-    MarkerCluster,
-    FeatureGroupSubGroup,
-    Fullscreen,
-    Search,
-    BeautifyIcon,
-)
-
-from folium.map import Layer, FeatureGroup, LayerControl, Marker
-
-from .models import Venue, Category, User, VManager, News, Map, Event
-from .forms import VenueForm, NewsForm, EventForm
-from .utils import Calendar, make_map
-from .constants import ICONS
-from datetime import datetime, timedelta
 import calendar
+
+from .models import Venue, User, VManager, News, Map, Event
+from .forms import VenueForm, NewsForm, EventForm
+from .utils import Calendar, make_map, find_coordinates
+from datetime import datetime, timedelta
+
 
 # Create your views here.
 
@@ -189,8 +176,16 @@ def edit(request):
         venue = get_object_or_404(Venue, id=data["id"])
         venue.description = data["description"]
         venue.url = data["url"]
+        if data["address"] != venue.address:
+            new_coordinates = find_coordinates(data['address'])
+            if new_coordinates == "Not found":
+                return JsonResponse(data, status=404)       
+        venue.latitude, venue.longitude = new_coordinates[0], new_coordinates[1]
         venue.address = data["address"]
+        print(venue)
         venue.save()
+        m = make_map()
+        m.save("venues/templates/venues/map.html")
         return JsonResponse(data, status=201)
 
 
@@ -212,11 +207,14 @@ def favorites(request):
 
 def news(request):
     news = News.objects.all().order_by("-date")
-    return render(request, "venues/news.html", {"news": news})
+    paginator = paginate(news, 9)
+    page_number = request.GET.get("page")
+    page = paginator.get_page(page_number)
+    return render(request, "venues/news.html", {"news": page})
 
 
 def events(request):
-    events = Event.objects.all().order_by("date")
+    events = Event.objects.all().order_by("-date")
     return render(request, "venues/events.html", {"events": events})
 
 
@@ -288,7 +286,7 @@ def post_event(request, user):
     if request.method == 'POST':
         data = request.POST
         date = data['date'].strip('""') 
-        date = datetime.strptime(date, "%Y/%m/%d %H:%M")
+        date = datetime.strptime(date, "%d/%m/%Y %H:%M")
         author = request.user.vmanager
         event = Event(
             author=author,

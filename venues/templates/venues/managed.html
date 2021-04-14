@@ -15,7 +15,7 @@
                         {{venue.category}}
                     </h6>
                     <h4 class="card-title">
-                        <a class="mr-0" href="{%url 'venue' venue.name %}">
+                        <a class="mr-0" href="{% url 'venue' venue.name %}">
                             {{ venue }}
 
                             {% if user.is_vmanager %}

@@ -1,37 +1,74 @@
 {% extends 'venues/layout.html' %}
 {% block body %}
+{% load static %}
 
-<div class="container" id="news-container">
-    <h2 class="mb-0 text-center">
-        Notizie più recenti
-    </h2>
-    <div class="blogs-1">
-        <div class="col-md-12 ml-auto mr-auto">
-            {% for article in news %}
-            <div class="card card-plain card-blog mt-0">
+    
+<div class="blogs-2" id="blogs-2">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-10 ml-auto mr-auto">
+                <h2 class="mb-0 text-center">
+                    Notizie più recenti
+                </h2>
+                <br>
                 <div class="row">
-                    <div class="col-md-12 ml-auto mr-auto">
-                        <div class="card-body">
-                            <h4 class="card-category">
-                                <a href="{% url 'venue' article.venue.name %}">
-                                    {{article.venue}}
+                    {% for article in news %}
+                    <div class="col-md-4">
+                        <div class="card card-plain card-blog">
+                            <div class="card-header card-header-image">
+                                <a href="{% url 'venue' article.venue %}">
+                                    <img class="img img-raised" src="{{article.venue.image.url}}">
                                 </a>
-                            </h4>
-                            <h3 class="card-title">
-                                {{article.title}}
-                            </h3>
-                            <p class="card-text">
-                                {{ article.content }}
-                            </p>
+                            </div>
+                            <div class="card-body">
+                                <h6 class="card-category text-info">{{article.venue}}</h6>
+                                <h4 class="card-title">
+                                    <a href="{% url 'venue' article.venue %}">{{article.title}}</a>
+                                </h4>
+                                <p class="card-description">
+                                    {% if article.content|wordcount > 20 %}
+                                    {{ article.content|truncatewords:20 }}
+                                    <button class="btn btn-sm btn-secondary read-more" data-status="more"
+                                        data-less="{{ article.content|truncatewords:25 }}"
+                                        data-description="{{article.content}}">Leggi di più</button>
+                                    {% else %}
+                                    {{ article.content }}
+                                    {% endif %}
+                                </p>
+                            </div>
                         </div>
-                        <p class="card-footer">
-                            {{ article.date }}
-                        </p>
                     </div>
+                    {% endfor %}
                 </div>
-                {% endfor %}
             </div>
         </div>
     </div>
+    <div class="container" id="pagination-container">
+        <nav aria-label="Page navigation example">
+            <ul class="pagination pagination-info pagination-sm justify-content-center">
+                {% if news.has_previous %}
+                <li class="page-item"><a class="page-link" href="?page={{news.previous_page_number}}"
+                        aria-label="Previous">&laquo;</a></li>
+                {% else %}
+                <li class="page-item disabled"><span class="page-link"> &laquo;</span></li>
+                {% endif %}
+                {% for page_num in news.paginator.page_range %}
+                {% if news.number == page_num %}
+                <li class="active page-item"><span class="page-link">{{ page_num }} <span
+                            class="sr-only">(current)</span></span></li>
+                {% else %}
+                <li class="page-item"><a class="page-link" href="?page={{page_num}}">{{ page_num }}</a></li>
+                {% endif %}
+                {% endfor %}
+                {% if news.has_next %}
+                <li class="page-item" aria-label="Next"><a class="page-link"
+                        href="?page={{news.next_page_number}}">&raquo;</a></li>
+                {% else %}
+                <li class="page-item disabled"><span class="page-link">&raquo;</span></li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
 </div>
+<script src="{% static 'venues/readmore.js' %}"></script>
 {% endblock %}

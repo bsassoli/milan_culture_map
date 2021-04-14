@@ -2,7 +2,10 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.conf import settings
 from django.urls import reverse
+
+
 import datetime
+
 
 
 # Create your models here.
@@ -38,7 +41,7 @@ class Venue(models.Model):
         on_delete=models.RESTRICT,
         related_name="venues",
     )
-
+    
     image = models.ImageField(
         upload_to="images/",
         default="logo-comune-milano.png",

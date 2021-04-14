@@ -1,19 +1,24 @@
 document.addEventListener('DOMContentLoaded', () => {
-    readmore_btn = document.querySelector('.read-more');
-    readmore_btn.addEventListener('click', () => {
-        if (readmore_btn.dataset.status==="more") {
-        full_text = readmore_btn.dataset.description;
-        document.querySelector('#description').innerHTML = full_text;
-        readmore_btn.innerHTML = "Leggi di meno";
-        readmore_btn.dataset.status="less";
-        document.querySelector('#description').append(readmore_btn);
+    readmore_btn = document.querySelectorAll('.read-more');
+    readmore_btn.forEach(element =>
+    element.addEventListener('click', () => {
+        if (element.dataset.status==="more") {
+        full_text = element.dataset.description;
+        let description = element.parentElement;
+        description.innerHTML = full_text;
+        console.log(full_text)
+        element.innerText = "Leggi di meno";
+        element.dataset.status="less";
+        description.append(element);
         }
         else {
-            less = readmore_btn.dataset.less;
-            readmore_btn.innerHTML = "Leggi di più";
-            document.querySelector('#description').innerHTML = less;
-            readmore_btn.dataset.status="more";
-            document.querySelector('#description').append(readmore_btn);
+            let description = element.parentElement;
+            less = element.dataset.less;
+            element.innerHTML = "Leggi di più";
+            description.innerHTML = less;
+            element.dataset.status="more";
+            description.append(element);
             }
     })
+    )
 })
