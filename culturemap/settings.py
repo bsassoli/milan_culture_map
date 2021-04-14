@@ -154,7 +154,7 @@ MEDIA_URL = '/media/'
 # Uncomment this when deploying
 
 STATICFILES_DIRS = (
-    os.path.join(BASE_DIR, 'venues/static'),
+    os.path.join(BASE_DIR, 'static'),
 )
 
 
