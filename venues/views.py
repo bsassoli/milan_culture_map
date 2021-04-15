@@ -280,6 +280,7 @@ def managed(request):
 def profile(request, user):
     return render(request, 'venues/profile.html')
 
+
 @login_required
 @user_passes_test(lambda u: u.is_vmanager)
 def post_event(request, user):
