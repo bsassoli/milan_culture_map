@@ -174,18 +174,24 @@ def edit(request):
     if request.method == "POST":
         data = json.loads(request.body)
         venue = get_object_or_404(Venue, id=data["id"])
+        print(venue)
         venue.description = data["description"]
         venue.url = data["url"]
         if data["address"] != venue.address:
+            print("Here")
             new_coordinates = find_coordinates(data['address'])
+            print(new_coordinates)
+            print("CICCIO")
             if new_coordinates == "Not found":
+                print("Not found")
                 return JsonResponse(data, status=404)       
-        venue.latitude, venue.longitude = new_coordinates[0], new_coordinates[1]
+            venue.latitude, venue.longitude = new_coordinates[0], new_coordinates[1]
         venue.address = data["address"]
-        print(venue)
         venue.save()
         m = make_map()
+        print("Here_later")
         m.save("venues/templates/venues/map.html")
+        print(data)
         return JsonResponse(data, status=201)
 
 
