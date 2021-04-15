@@ -76,7 +76,7 @@ class Calendar(HTMLCalendar):
         for event in events_per_day:
             d += f'<li class="calendar event event-begin list-unstyled bg-warning"> {event.title} </li>'  # This is where get_event_html_url was
         if day != 0:
-            return f"<td><span class='calendar days'>{day}</span><ul class=""> {d} </ul></td>"
+            return f"<td><span class='calendar days'>{day}</span><ul> {d} </ul></td>"
         return '<td></td>'
 
     def formatweek(self, theweek, events):
