@@ -57,6 +57,11 @@ Calendar Styling */
     width: 14.28571%;
 }
 
+.calendar ul li {
+    float: start;
+    width: 14.28571%;
+}
+
 .calendar .day-names {
     border-bottom: 1px solid #eee;
 }
@@ -69,6 +74,10 @@ Calendar Styling */
 .calendar .days li {
     border-bottom: 1px solid #eee;
     min-height: 8rem;
+    width: auto;
+    text-align: justify;
+    text-overflow: ellipsis;
+    align-items: center;
 }
 
 .calendar .days li .date {

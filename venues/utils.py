@@ -74,7 +74,7 @@ class Calendar(HTMLCalendar):
         events_per_day = events.filter(date__day=day)
         d = ''
         for event in events_per_day:
-            d += f'<li class="calendar event begin span-2 list-unstyled bg-warning"> {event.title} </li>'  # This is where get_event_html_url was
+            d += f'<li class="calendar event event-begin list-unstyled bg-warning"> {event.title} </li>'  # This is where get_event_html_url was
         if day != 0:
             return f"<td><span class='calendar days'>{day}</span><ul> {d} </ul></td>"
         return '<td></td>'
@@ -86,7 +86,9 @@ class Calendar(HTMLCalendar):
         return f'<tr> {week} </tr>'
 
     def formatmonth(self, withyear=True):
-        events = Event.objects.filter(date__year=self.year, date__month=self.month)
+        events = Event.objects.filter(
+            date__year=self.year, date__month=self.month
+            )
         cal = '<table border="0" cellpadding="0" cellspacing="0" class="calendar">\n'
         cal += f'{self.formatmonthname(self.year, self.month, withyear=withyear)}\n'
         cal += f'{self.formatweekheader()}\n'
@@ -221,6 +223,7 @@ def make_map(center=MILAN_CENTER):
     search.add_to(m)
 
     return m
+
 
 def find_coordinates(address: str) -> list:
     """Return coordinates of an address from Here.

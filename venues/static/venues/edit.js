@@ -48,20 +48,19 @@ document.addEventListener('DOMContentLoaded', function (e) {
                 })
                 .then(response => response.json())
                 .then(data => {
-                            edit_form.style.display = 'none';
-                            edit_button.dataset.address = data.address;
-                            edit_button.dataset.url = data.url;
-                            edit_button.dataset.description = data.description;
-                            document.querySelector('address').innerHTML = data.address;
-                            document.querySelector('#url').setAttribute('href', data.url);
-                            document.querySelector('#description').innerHTML = data.description;
-                            document.querySelector('#venue-container').style.display = 'block';
-                            var venue = data.name;
-                            let text = `La venue ${venue} è stata modificata con successo.`;
-                            $(".modal-body").html(text);
-                            $('#edit-modal').modal();
-                        }
-                    })
+                    edit_form.style.display = 'none';
+                    edit_button.dataset.address = data.address;
+                    edit_button.dataset.url = data.url;
+                    edit_button.dataset.description = data.description;
+                    document.querySelector('address').innerHTML = data.address;
+                    document.querySelector('#url').setAttribute('href', data.url);
+                    document.querySelector('#description').innerHTML = data.description;
+                    document.querySelector('#venue-container').style.display = 'block';
+                    var venue = data.name;
+                    let text = `La venue ${venue} è stata modificata con successo.`;
+                    $(".modal-body").html(text);
+                    $('#edit-modal').modal();
+                })
         })
     })
 })
