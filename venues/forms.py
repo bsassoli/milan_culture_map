@@ -1,6 +1,6 @@
 from django import forms
 from tempus_dominus.widgets import DateTimePicker
-from .models import VManager, User, News
+from .models import News
 
 
 class VenueForm(forms.Form):

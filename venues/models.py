@@ -3,12 +3,10 @@ from django.contrib.auth.models import AbstractUser
 from django.conf import settings
 from django.urls import reverse
 
-
 import datetime
-
-
-
 # Create your models here.
+
+
 class User(AbstractUser):
     is_vmanager = models.BooleanField(default=False)
 
@@ -41,7 +39,7 @@ class Venue(models.Model):
         on_delete=models.RESTRICT,
         related_name="venues",
     )
-    
+
     image = models.ImageField(
         upload_to="images/",
         default="logo-comune-milano.png",
@@ -69,7 +67,7 @@ class VManager(models.Model):
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
-        primary_key=True, 
+        primary_key=True,
         default="",
         related_name="vmanager",
     )
@@ -92,7 +90,7 @@ class Event(models.Model):
         VManager,
         on_delete=models.RESTRICT
     )
-    
+
     venue = models.ForeignKey(
         Venue,
         related_name="event",
@@ -107,7 +105,7 @@ class Event(models.Model):
 
     def __str__(self):
         return f"{self.title} di {self.venue} il {self.date}"
-    
+
     @property
     def get_html_url(self):
         url = reverse('event_edit', args=(self.id,))

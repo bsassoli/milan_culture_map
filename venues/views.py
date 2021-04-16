@@ -3,7 +3,6 @@ from django.db import IntegrityError
 from django.http import HttpResponseRedirect, JsonResponse, HttpResponse
 from django.shortcuts import render, get_object_or_404
 from django.urls import reverse, reverse_lazy
-from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.views.generic import ListView
 from django.utils.safestring import mark_safe
@@ -21,15 +20,9 @@ from datetime import datetime, timedelta
 
 from .models import Venue, User, VManager, News, Map, Event
 from .forms import VenueForm, NewsForm, EventForm
-from .utils import Calendar, make_map, find_coordinates
-
+from .utils import Calendar, make_map, find_coordinates, paginate
 
 # Create your views here.
-
-def paginate(items, number):
-    objects = [item for item in items]
-    paginator = Paginator(objects, number)
-    return paginator
 
 
 def index(request):
@@ -117,7 +110,8 @@ def register(request):
                 mail_subject, message, to=[to_email]
             )
             email_to_send.send()
-            return HttpResponse('Conferma il tuo indirizzo email per attivare il tuo profilo.')
+            return HttpResponse('Conferma il tuo indirizzo email per attivare\
+                il tuo profilo.')
         except IntegrityError:
             return render(
                 request, "venues/register.html", {
@@ -129,10 +123,10 @@ def register(request):
     else:
         return render(request, "venues/register.html")
 
-# Venue managers will need to be flagged as active by admin
-# They will have access to venue editing for their venues
 
 def registermanager(request):
+    # Venue managers will need to be flagged as active by admin
+    # They will have access to venue editing for their venues
     if request.method == "POST":
         username = request.POST["username"]
         email = request.POST["email"]
@@ -197,10 +191,11 @@ def edit(request):
         venue.description = data["description"]
         venue.url = data["url"]
         if data["address"] != venue.address:
-            new_coordinates = find_coordinates(data['address'])            
+            new_coordinates = find_coordinates(data['address'])
             if new_coordinates == "Not found":
-                return JsonResponse(data, status=404)       
-            venue.latitude, venue.longitude = new_coordinates[0], new_coordinates[1]
+                return JsonResponse(data, status=404)
+            venue.latitude, venue.longitude = new_coordinates[0],
+            new_coordinates[1]
         venue.address = data["address"]
         venue.save()
         m = make_map()
@@ -307,12 +302,12 @@ def profile(request, user):
 def post_event(request, user):
     if request.method == 'POST':
         data = request.POST
-        date = data['date'].strip('""') 
+        date = data['date'].strip('""')
         date = datetime.strptime(date, "%d/%m/%Y %H:%M")
         author = request.user.vmanager
         event = Event(
             author=author,
-            description=data['description'],    
+            description=data['description'],
             title=data['title'],
             venue=Venue.objects.get(id=data['venue']),
             date=date
@@ -335,7 +330,7 @@ def post_news(request, user):
         author = request.user.vmanager
         article = News(
             author=author,
-            content=data['content'],    
+            content=data['content'],
             title=data['title'],
             venue=Venue.objects.get(id=data['venue']),
         )
@@ -359,6 +354,7 @@ def activate(request, uidb64, token):
         user.save()
         login(request, user)
         # return redirect('home')
-        return HttpResponse('Thank you for your email confirmation. Now you can login your account.')
+        return HttpResponse('Grazie per aver confermato la mail. Ora puoi\
+            accedere al tuo account.')
     else:
         return HttpResponse('Activation link is invalid!')

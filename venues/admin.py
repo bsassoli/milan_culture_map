@@ -20,7 +20,8 @@ class UserAdmin(admin.ModelAdmin):
     ordering = ('username', )
     fieldsets = (
         (None, {
-            'fields': ('username', 'email', 'is_staff', 'is_vmanager', 'is_active')
+            'fields':
+            ('username', 'email', 'is_staff', 'is_vmanager', 'is_active')
         }),
     )
     inlines = [VenueInLineAdmin]
