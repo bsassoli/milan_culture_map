@@ -13,13 +13,17 @@ The homepage is an interactive map built in python via `folium` and rendered as 
 
 The homepage can be reached  by clicking on the culturemapp link in the navigation bar from any other page in the webapp.
 
-### Distinctiveness
+## CS50 Stuff
 
-### Complexity
+#### Distinctiveness
 
-### How to run
+#### Complexity
+
+#### How to run
 
 ### Live demo
+
+A live demo was deployed to Heroku and can be seen by clicking on (this link)[https://culturemapp.herokuapp.com]. Some features such as geolocation may need to be enabled in your browser or not be fully functional due to Heroku's security limitations.
 
 ### Technical docs and file descriptions
 
@@ -43,7 +47,4 @@ A **standard user ** will be able to save his favorite venues and retrieve them 
 
 
 
-## Stack
-
- ![Python](https://img.shields.io/badge/-Python-blue?style=plastic&logo=python&logoColor=white) ![Django](https://img.shields.io/badge/-Django-2c852f?style=plastic&logo=django&logoColor=white) ![Git](https://img.shields.io/badge/-JavaScript-F05032?style=plastic&logo=git&logoColor=white) 
-
+## Stack2

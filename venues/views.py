@@ -1,24 +1,30 @@
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
-from django.http import HttpResponseRedirect, JsonResponse
+from django.http import HttpResponseRedirect, JsonResponse, HttpResponse
 from django.shortcuts import render, get_object_or_404
 from django.urls import reverse, reverse_lazy
 from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.views.generic import ListView
 from django.utils.safestring import mark_safe
+from django.contrib.sites.shortcuts import get_current_site
+from django.utils.encoding import force_bytes, force_text
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.template.loader import render_to_string
+from .tokens import account_activation_token
+from django.core.mail import EmailMessage
+
 
 import json
 import calendar
+from datetime import datetime, timedelta
 
 from .models import Venue, User, VManager, News, Map, Event
 from .forms import VenueForm, NewsForm, EventForm
 from .utils import Calendar, make_map, find_coordinates
-from datetime import datetime, timedelta
 
 
 # Create your views here.
-
 
 def paginate(items, number):
     objects = [item for item in items]
@@ -96,8 +102,22 @@ def register(request):
         # Attempt to create new user
         try:
             user = User.objects.create_user(username, email, password)
+            user.is_active = False
             user.save()
-
+            current_site = get_current_site(request)
+            mail_subject = 'Attiva il tuo profilo.'
+            message = render_to_string('venues/acc_active_email.html', {
+                'user': user,
+                'domain': current_site.domain,
+                'uid': force_text(urlsafe_base64_encode(force_bytes(user.pk))),
+                'token': account_activation_token.make_token(user),
+            })
+            to_email = email
+            email_to_send = EmailMessage(
+                mail_subject, message, to=[to_email]
+            )
+            email_to_send.send()
+            return HttpResponse('Conferma il tuo indirizzo email per attivare il tuo profilo.')
         except IntegrityError:
             return render(
                 request, "venues/register.html", {
@@ -109,9 +129,9 @@ def register(request):
     else:
         return render(request, "venues/register.html")
 
-
-# Venue managers will require to be flagged as active by admin
+# Venue managers will need to be flagged as active by admin
 # They will have access to venue editing for their venues
+
 def registermanager(request):
     if request.method == "POST":
         username = request.POST["username"]
@@ -174,16 +194,11 @@ def edit(request):
     if request.method == "POST":
         data = json.loads(request.body)
         venue = get_object_or_404(Venue, id=data["id"])
-        print(venue)
         venue.description = data["description"]
         venue.url = data["url"]
         if data["address"] != venue.address:
-            print("Here")
-            new_coordinates = find_coordinates(data['address'])
-            print(new_coordinates)
-            print("CICCIO")
+            new_coordinates = find_coordinates(data['address'])            
             if new_coordinates == "Not found":
-                print("Not found")
                 return JsonResponse(data, status=404)       
             venue.latitude, venue.longitude = new_coordinates[0], new_coordinates[1]
         venue.address = data["address"]
@@ -331,3 +346,19 @@ def post_news(request, user):
     form.fields['venue'].queryset = manager.venue.all()
     context = {"form": form, }
     return render(request, "venues/post_news.html", context)
+
+
+def activate(request, uidb64, token):
+    try:
+        uid = force_text(urlsafe_base64_decode(uidb64))
+        user = User.objects.get(pk=uid)
+    except(TypeError, ValueError, OverflowError, User.DoesNotExist):
+        user = None
+    if user is not None and account_activation_token.check_token(user, token):
+        user.is_active = True
+        user.save()
+        login(request, user)
+        # return redirect('home')
+        return HttpResponse('Thank you for your email confirmation. Now you can login your account.')
+    else:
+        return HttpResponse('Activation link is invalid!')
