@@ -13,14 +13,14 @@ import os
 from pathlib import Path
 import django_on_heroku
 import dj_database_url
-import dotenv
+import environ
 
+# Initialise environment variables
+env = environ.Env()
+environ.Env.read_env()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-dotenv_file = os.path.join(BASE_DIR, ".env")
-if os.path.isfile(dotenv_file):
-    dotenv.load_dotenv(dotenv_file)
 
 SETTINGS_PATH = os.path.normpath(os.path.dirname(__file__))
 
@@ -32,7 +32,7 @@ TEMPLATE_DIRS = [
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ['SECRET_KEY']
+SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -192,5 +192,5 @@ LOGGING = {
 EMAIL_USE_TLS = True
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_HOST_USER = 'culturemappmi@gmail.com'
-EMAIL_HOST_PASSWORD = os.environ['GMAIL_KEY']
+EMAIL_HOST_PASSWORD = env('GMAIL_KEY')
 EMAIL_PORT = 587

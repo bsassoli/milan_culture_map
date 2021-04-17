@@ -20,38 +20,34 @@ from datetime import datetime, timedelta
 
 from .models import Venue, User, VManager, News, Map, Event
 from .forms import VenueForm, NewsForm, EventForm
-from .utils import Calendar, make_map, find_coordinates, paginate
+from .utils import Calendar, make_map, find_coordinates, paginate, notify_admins
 
 # Create your views here.
 
 
 def index(request):
-    mymap = get_object_or_404(Map).html
-    context = {"mymap": mymap}
-    return render(request, "venues/index.html", context)
+    return render(request, "venues/index.html")
 
 
 @login_required
 @user_passes_test(lambda u: u.is_staff)
 # Admin users or staff users can update/create maps
 def map(request):
+    """Make map and save 1) as map.html and 2) as Map instance"""
+    m = make_map()  # use helper from utils.py
 
-    m = make_map()
-
-    # Map model currently unused
+    # Map model _ currently unused
     mymap = m._repr_html_()
-
-    context = {"mymap": mymap}
-
     Map.objects.update_or_create(defaults={"html": mymap})
 
     # Save map for rendering as include
     m.save("venues/templates/venues/map.html")
 
-    return render(request, "venues/index.html", context)
+    return render(request, "venues/index.html")
 
 
 def login_view(request):
+    """Login view"""
     if request.method == "POST":
         # Attempt to sign user in
         username = request.POST["username"]
@@ -78,6 +74,8 @@ def logout_view(request):
 
 
 def register(request):
+    """Standard user registration
+    """
     if request.method == "POST":
         username = request.POST["username"]
         email = request.POST["email"]
@@ -88,16 +86,15 @@ def register(request):
         if password != confirmation:
             return render(
                 request, "venues/register.html", {
-                    "message": "Passwords must match."
+                    "message": "Le password non coincidono."
                     }
             )
 
         # Attempt to create new user
         try:
             user = User.objects.create_user(username, email, password)
-            user.is_active = False
-            user.save()
-            current_site = get_current_site(request)
+            user.is_active = False  # User set to active upon confirmation
+            current_site = get_current_site(request)  # Send this in email
             mail_subject = 'Attiva il tuo profilo.'
             message = render_to_string('venues/acc_active_email.html', {
                 'user': user,
@@ -105,17 +102,17 @@ def register(request):
                 'uid': force_text(urlsafe_base64_encode(force_bytes(user.pk))),
                 'token': account_activation_token.make_token(user),
             })
-            to_email = email
             email_to_send = EmailMessage(
-                mail_subject, message, to=[to_email]
+                mail_subject, message, to=[email]
             )
-            email_to_send.send()
+            email_to_send.send()  # Send email requesting confirmation
+            user.save()
             return HttpResponse('Conferma il tuo indirizzo email per attivare\
                 il tuo profilo.')
         except IntegrityError:
             return render(
                 request, "venues/register.html", {
-                    "message": "Username already taken."
+                    "message": "Nome utente già preso."
                     }
             )
         login(request, user)
@@ -125,6 +122,8 @@ def register(request):
 
 
 def registermanager(request):
+    """Standard user registration
+    """
     # Venue managers will need to be flagged as active by admin
     # They will have access to venue editing for their venues
     if request.method == "POST":
@@ -139,7 +138,7 @@ def registermanager(request):
                 request,
                 "venues/registermanager.html", {
                     "venues": Venue.objects.all(),
-                    "message": "Passwords must match."
+                    "message": "Le password non coincidono."
                 },
             )
 
@@ -147,16 +146,34 @@ def registermanager(request):
         try:
             user = User.objects.create_user(username, email, password)
             manager = VManager(user=user)
-            user.is_vmanager = True
+            user.is_vmanager = False
             user.is_active = False
+            current_site = get_current_site(request)  # Send this in email
+            mail_subject = 'Attiva il tuo profilo.'
+            message = render_to_string('venues/acc_active_email.html', {
+                'user': user,
+                'domain': current_site.domain,
+                'uid': force_text(urlsafe_base64_encode(force_bytes(user.pk))),
+                'token': account_activation_token.make_token(user),
+            })
+            email_to_send = EmailMessage(
+                mail_subject, message, to=[email]
+            )
+            email_to_send.send()  # Send email requesting confirmation
+            notify_admins(username)
             user.save()
             manager.save()
             manager.venue.add(venue)
+            manager.save()
+            return HttpResponse('Conferma il tuo indirizzo email per attivare\
+                il tuo profilo.')
         except IntegrityError:
+            print("RAISING ERROR")
+            print(str(IntegrityError))
             return render(
                 request,
                 "venues/registermanager.html", {
-                    "message": "Username already taken.",
+                    "message": "Questo nome utente è già preso.",
                     "venues": Venue.objects.all()
                     },
             )
@@ -199,9 +216,7 @@ def edit(request):
         venue.address = data["address"]
         venue.save()
         m = make_map()
-        print("Here_later")
         m.save("venues/templates/venues/map.html")
-        print(data)
         return JsonResponse(data, status=201)
 
 
@@ -356,5 +371,4 @@ def activate(request, uidb64, token):
         # return redirect('home')
         return HttpResponse('Grazie per aver confermato la mail. Ora puoi\
             accedere al tuo account.')
-    else:
-        return HttpResponse('Activation link is invalid!')
+    return HttpResponse('Activation link is invalid!')

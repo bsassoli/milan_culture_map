@@ -1,6 +1,6 @@
 import folium
 import numpy as np
-import os
+import environ
 from calendar import HTMLCalendar
 from folium.plugins import (
     LocateControl,
@@ -11,8 +11,14 @@ from folium.plugins import (
 )
 from geopy.geocoders import Here
 from django.core.paginator import Paginator
-from .models import Event, Category, Venue
+from django.core.mail import EmailMessage
+from .models import Event, Category, Venue, User
 from .constants import MILAN_CENTER, ICONS
+
+
+# Initialise environment variables
+env = environ.Env()
+environ.Env.read_env()
 
 
 class Calendar(HTMLCalendar):
@@ -185,7 +191,7 @@ def find_coordinates(address: str) -> list:
         list: a list of [latitude, longitude]
     """
     # Choosing geolocation API
-    geolocator = Here(apikey=os.environ['HERE_API'])
+    geolocator = Here(apikey=env('HERE_API'))
     try:
         coordinates = geolocator.geocode(address)
         return [coordinates.latitude, coordinates.longitude]
@@ -198,3 +204,17 @@ def paginate(items, number):
     objects = [item for item in items]
     paginator = Paginator(objects, number)
     return paginator
+
+
+def notify_admins(user):
+    """
+    Notifies superusers when someone registers as venue manager
+    """
+    admins = User.objects.filter(is_superuser=True)  # get all admins
+    admin_emails = [admin.email for admin in admins]  # get all admin emails
+    mail_subject = 'Un utente si è regitrato come venue manager'
+    message = f"Verifica il profilo dell'utente {user} nel pannello adm."
+    email_to_send = EmailMessage(
+        mail_subject, message, to=admin_emails
+    )
+    email_to_send.send()  # Send email requesting confirmation

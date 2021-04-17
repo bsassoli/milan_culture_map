@@ -49,22 +49,20 @@ Clicking on a venue marker will display a tooltip with the venue's basic informa
 
 The homepage can be reached from any other page in the webapp by clicking on the CultureMappMilano link in the navigation bar.
 
-![Homepage](README.assets/Schermata 2021-04-16 alle 16.37.25.png)
-
 ### Registration and user types
 
 Users can register as **standard users** or as **venues managers** via the **Iscriviti** link on the navigation bar. 
 
 #### Unregistered users
 
-**Unregistered users **in addition to navigating the map, can:
+**Unregistered users**, in addition to navigating the map, can:
 
 * see the latest news (**Notizie** in the navigation bar)
 * see the latest events (**Eventi** in the navigation bar)
 
 #### Registered users
 
-A **registered user ** will be able to:
+A **registered user** will be able to:
 
 * save his favorite venues and retrieve them or modify the list by clicking on **Preferiti** in the navigation bar
 * have access to their own **profile page**.
@@ -73,7 +71,7 @@ In order to register a user will have to provide a valid confirmation email and 
 
 #### Venue managers
 
-A **venue manager ** will be able to: 
+A **venue manager** will be able to: 
 
 * **edit** the venues they manage (if the address is changed the map will update itself provided the address corresponds to valid coordinates)
 * **post news** for the venues they manage
@@ -91,7 +89,7 @@ Description of main files added.
 
 * `forms.py` forms for editing venues, posting news and posting events 
 * ── `static`
-  │   │   └── `venues`
+  `venues`
   │   │       ├── `assets` Material Kit CSS and JS 
   │   │       ├── `edit.js` Venue editing
   │   │       ├── `follow.js` Venue add to favorites
