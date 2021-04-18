@@ -3,15 +3,13 @@ Culturemapp is an interactive, dynamic web app mapping over 400 cultural venues 
 
 The dataset and the methodolody for the definition of what counts as a "cultural venue" were gathered and developed with the support of a team from the Municipality of Milan. 
 
-[toc]
-
 ## CS50W requirements
 
 ### Distinctiveness and complexity
 
 While some functionalities (e.g. adding a favorite venue) are strongly reminiscent of other CS50w projects such as "Network", most of core of this app has nothing to do with any other previous project. Additionally, most features are far more complex. 
 
-E.g.: 
+E.g.:
 
 * the home page is in fact a geographical rendering of the venues object instances from the db
 * two type of users are introduced (on top of the Admin layer) - something that is not present in any other project
