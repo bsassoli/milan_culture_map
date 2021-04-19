@@ -53,6 +53,11 @@ class Venue(models.Model):
 
     class Meta:
         ordering = ["name"]
+        indexes = [
+            models.Index(fields=['name']),
+            models.Index(fields=['category']),
+            models.Index(fields=['address']), 
+        ]
 
 
 class VManager(models.Model):
@@ -98,7 +103,12 @@ class Event(models.Model):
         url = reverse('event_edit', args=(self.id,))
         return f'<p>{self.title}</p><a href="{url}">edit</a>'
 
-
+    class Meta:
+        indexes = [
+            models.Index(fields=['venue']),
+            models.Index(fields=['date']),
+            models.Index(fields=['title']),
+        ]
 class News(models.Model):
     author = models.ForeignKey(
         VManager,
@@ -117,6 +127,11 @@ class News(models.Model):
 
     class Meta:
         verbose_name_plural = "news"
+        indexes = [
+            models.Index(fields=['venue']),
+            models.Index(fields=['date']),
+            models.Index(fields=['title']),
+        ]
 
     def __str__(self):
         return f"{self.title}, {self.venue}"
