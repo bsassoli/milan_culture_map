@@ -83,18 +83,14 @@ These features can be accessed from the dropdown menu under the venue managers p
 
 Description of main files added.
 
-- `constants.py` Contains CONSTANTS used in creating the map (e.g. a dictionary for the html rendering of markers
+* `constants.py` Contains CONSTANTS used in creating the map (e.g. a dictionary for the html rendering of markers
 
 * `forms.py` forms for editing venues, posting news and posting events 
-* ── `static`
-  `venues`
-  │   │       ├── `assets` Material Kit CSS and JS 
-  │   │       ├── `edit.js` Venue editing
-  │   │       ├── `follow.js` Venue add to favorites
-  │   │       ├── `readmore.js` Adds read more/readless button when needed
-  │   │       └── `styles.css` Self-explanatory
-* │   ├── `templates`
-  │   │   ├── `registration`
-  │   │   │   └── `login.html` Self-explanatory
-* `utils.py` Contains functions utilized in `views.py` e.g.`make_map`, `find_coordinates`.
-  
+* `static/venues`
+  * `assets` Material Kit CSS and JS
+  * `edit.js` Venue editing
+  * `follow.js` Venue add to favorites
+  * `readmore.js` Adds read more/readless button when needed
+  * `styles.css` Self-explanatory
+* `utils.py` Contains functions utilized in `views.py` e.g.`make_map`, `find_coordinates`
+* `tokens.py` Generates account activation tokens

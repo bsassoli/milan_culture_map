@@ -34,21 +34,22 @@
             <a class="navbar-brand" href="/">
                 CultureMapMilano
             </a>
-             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
-                 aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                 <span class="sr-only">Toggle navigation</span>
-                 <span class="navbar-toggler-icon"></span>
-                 <span class="navbar-toggler-icon"></span>
-                 <span class="navbar-toggler-icon"></span>
-             </button>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="navbar-toggler-icon"></span>
+                <span class="navbar-toggler-icon"></span>
+                <span class="navbar-toggler-icon"></span>
+            </button>
             <div class="collapse navbar-collapse" id="navbarNav">
-             <ul class="navbar-nav mr-auto">
-            
-            {% if user.is_authenticated %}
-                <li class="nav-item">
-                    <div class="dropdown">
-                        <button class="btn btn-round btn-info dropdown-toggle" type="button" id="dropdownMenuButton"
-                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <ul class="navbar-nav mr-auto">
+
+                    {% if user.is_authenticated %}
+                    <li class="nav-item">
+                        {% if user.is_vmanager %}
+                        <div class="dropdown">
+                            <button class="btn btn-round btn-info dropdown-toggle" type="button" id="dropdownMenuButton"
+                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 {% if user.is_staff %}
                                 <i class="fas fa-user-shield"></i>
                                 {% endif %}
@@ -58,79 +59,92 @@
                                 <strong>
                                     {{ user.username }}
                                 </strong>
-                        </button>
-                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                            <a class="dropdown-item" href="{% url 'managed' %}">            
-                                Le mie venues
-                            </a>                            
-                            <a class="dropdown-item" href="{% url 'profile' user %}">Account</a>
-                            <a class="dropdown-item" href="{% url 'post_news' user %}"> Aggiungi articolo</a>
-                            <a class="dropdown-item" href="{% url 'post_event' user %}">Aggiungi evento</a>
+                            </button>
+                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                <a class="dropdown-item" href="{% url 'managed' %}">
+                                    Le mie venues
+                                </a>
+                                <a class="dropdown-item" href="{% url 'profile' user %}">Account</a>
+                                <a class="dropdown-item" href="{% url 'post_news' user %}"> Aggiungi articolo</a>
+                                <a class="dropdown-item" href="{% url 'post_event' user %}">Aggiungi evento</a>
+                            </div>
                         </div>
-                    </div>
-                </li>
-                {% endif %}
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'news' %}">
-                        <i class="material-icons">feed</i>
-                        Notizie
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'events' %}">
-                        <i class="material-icons">event</i>
-                        Eventi
-                    </a>
-                </li>
-                {% if user.is_authenticated %}
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'favorites' %}">
-                        <i class="material-icons">apps</i>
-                        Preferiti
-                    </a>
-                </li>
-                {% endif %}
-            </ul>            
-            <ul class="navbar-nav">
-                <!-- Uncomment this to implement search form in navbar
+                        {% else %}
+                        <a href="{% url 'profile' user %}">
+                            <button class="btn btn-round btn-info" type="button">
+                            {% if user.is_staff %}
+                            <i class="fas fa-user-shield"></i>
+                            {% endif %}
+                            <strong>
+                                {{ user.username }}
+                            </strong>
+                        </button>
+                        </a>
+                        {% endif %}
+                        
+                    </li>
+                    {% endif %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'news' %}">
+                            <i class="material-icons">feed</i>
+                            Notizie
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'events' %}">
+                            <i class="material-icons">event</i>
+                            Eventi
+                        </a>
+                    </li>
+                    {% if user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'favorites' %}">
+                            <i class="material-icons">apps</i>
+                            Preferiti
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+                <ul class="navbar-nav">
+                    <!-- Uncomment this to implement search form in navbar
                     <form class="form-inline my-2 my-lg-0">
                         <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
                         <button class="btn btn-outline-success my-2 my-sm-0" type="submit"> <i
                                 class="fas fa-search"></i></button>
                     </form>
                 -->
-                {% if user.is_authenticated %}
+                    {% if user.is_authenticated %}
                     {% if user.is_staff %}
                     <li class="nav-item">
                         <a class="btn btn-danger btn-raised btn-round" href="{% url 'map' %}">Aggiorna</a>
                     </li>
                     {% endif %}
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'logout' %}">
-                        <i class="material-icons">logout</i>
-                        Esci
-                    </a>
-                </li>
-                {% else %}
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'login' %}">
-                        <i class="material-icons">login</i>
-                        Entra</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'register' %}">
-                        <i class="material-icons">how_to_reg</i>
-                        Iscriviti</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'about' %}">
-                        <i class="material-icons">info</i>
-                        Scopri
-                    </a>
-                </li>
-                {% endif %}
-            </ul>
-        </div>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'logout' %}">
+                            <i class="material-icons">logout</i>
+                            Esci
+                        </a>
+                    </li>
+                    {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'login' %}">
+                            <i class="material-icons">login</i>
+                            Entra</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'register' %}">
+                            <i class="material-icons">how_to_reg</i>
+                            Iscriviti</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'about' %}">
+                            <i class="material-icons">info</i>
+                            Scopri
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
         </div>
     </nav>
 
