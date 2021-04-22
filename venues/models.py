@@ -8,10 +8,12 @@ import datetime
 
 
 class User(AbstractUser):
+    """Standard anonymous user"""
     is_vmanager = models.BooleanField(default=False)
 
 
 class Category(models.Model):
+    """Categories of venues"""
     name = models.CharField(max_length=30)
 
     def __str__(self):
@@ -22,6 +24,8 @@ class Category(models.Model):
 
 
 class Venue(models.Model):
+    """Class containing most non user-ralted info.
+    """
     name = models.CharField(max_length=400)
     latitude = models.FloatField()
     longitude = models.FloatField()
@@ -61,6 +65,7 @@ class Venue(models.Model):
 
 
 class VManager(models.Model):
+    """User type that is allowed to edit venues, postartciles and events"""
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
@@ -82,6 +87,7 @@ class VManager(models.Model):
 
 
 class Event(models.Model):
+    """Venue event"""
     author = models.ForeignKey(
         VManager,
         on_delete=models.RESTRICT
@@ -109,7 +115,10 @@ class Event(models.Model):
             models.Index(fields=['date']),
             models.Index(fields=['title']),
         ]
+
+
 class News(models.Model):
+    """News post about venues."""
     author = models.ForeignKey(
         VManager,
         on_delete=models.RESTRICT,
@@ -138,4 +147,5 @@ class News(models.Model):
 
 
 class Map(models.Model):
+    """HTML rendering of map"""
     html = models.TextField()
