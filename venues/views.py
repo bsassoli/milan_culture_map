@@ -246,7 +246,10 @@ def news(request):
 
 def events(request):
     events = Event.objects.all().order_by("-date")
-    return render(request, "venues/events.html", {"events": events})
+    paginator = paginate(events, 9)
+    page_number = request.GET.get("page")
+    page = paginator.get_page(page_number)
+    return render(request, "venues/events.html", {"events": page})
 
 
 @login_required
