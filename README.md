@@ -3,19 +3,6 @@ Culturemapp is an interactive, dynamic web app mapping over 400 cultural venues 
 
 The dataset and the methodolody for the definition of what counts as a "cultural venue" were gathered and developed with the support of a team from the Municipality of Milan. 
 
-## CS50W requirements
-
-### Distinctiveness and complexity
-
-While some functionalities (e.g. adding a favorite venue) are strongly reminiscent of other CS50w projects such as "Network", most of core of this app has nothing to do with any other previous project. Additionally, most features are far more complex. 
-
-E.g.:
-
-* the home page is in fact a geographical rendering of the venues object instances from the db
-* two type of users are introduced (on top of the Admin layer) - something that is not present in any other project
-  * the venue manager user type is activated only by the admin
-* user authentication is in two-steps via confirmation email
-* ...
 
 ## How to run
 
@@ -78,19 +65,3 @@ A **venue manager** will be able to:
 These features can be accessed from the dropdown menu under the venue managers profile button.
 
 *Venue managers have to be authorized by the Admin in order to gain access.*
-
-## File descriptions
-
-Description of main files added.
-
-* `constants.py` Contains CONSTANTS used in creating the map (e.g. a dictionary for the html rendering of markers
-
-* `forms.py` forms for editing venues, posting news and posting events 
-* `static/venues`
-  * `assets` Material Kit CSS and JS
-  * `edit.js` Venue editing
-  * `follow.js` Venue add to favorites
-  * `readmore.js` Adds read more/readless button when needed
-  * `styles.css` Self-explanatory
-* `utils.py` Contains functions utilized in `views.py` e.g.`make_map`, `find_coordinates`
-* `tokens.py` Generates account activation tokens
