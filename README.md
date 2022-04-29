@@ -1,4 +1,7 @@
 # culturemapp
+
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/5b33c8e802f64c8e80a4409b081b1061)](https://app.codacy.com/gh/bsassoli/milan_culture_map?utm_source=github.com&utm_medium=referral&utm_content=bsassoli/milan_culture_map&utm_campaign=Badge_Grade_Settings)
+
 Culturemapp is an interactive, dynamic web app mapping over 400 cultural venues in the city of Milan, Italy. 
 
 The dataset and the methodolody for the definition of what counts as a "cultural venue" were gathered and developed with the support of a team from the Municipality of Milan. 
