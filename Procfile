@@ -1,2 +1,1 @@
-web: gunicorn culturemap.wsgi --log-file -
-release: python manage.py migrate
+web: gunicorn culturemap.wsgi

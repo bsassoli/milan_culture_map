@@ -11,7 +11,6 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 import os
 from pathlib import Path
-import django_on_heroku
 import dj_database_url
 import environ
 
@@ -37,7 +36,7 @@ SECRET_KEY = env('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 # Application definition
 INSTALLED_APPS = [
@@ -91,17 +90,17 @@ LOGOUT_REDIRECT_URL = 'index'
 
 # Use this locally
 
-""" DATABASES = {
+DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
     }
-} """
+}
 
 # Use for production
 
-DATABASES = {}
-DATABASES['default'] = dj_database_url.config(conn_max_age=600)
+# DATABASES = {}
+# DATABASES['default'] = dj_database_url.config(conn_max_age=600)
 
 
 # Define AuthUserModel
@@ -155,16 +154,17 @@ MEDIA_URL = '/media/'
 
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'static'),
-)
+ )
 
 
-# Uncomment this when deploying
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+# # Uncomment this when deploying
+STATICFILxES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-# Uncomment this when deploying
-django_on_heroku.settings(locals())
+# # Uncomment this when deploying
+# # django_on_heroku.settings(locals())
 
-# Uncomment this when deploying
+# # Uncomment this when deploying
+
 options = DATABASES['default'].get('OPTIONS', {})
 options.pop('sslmode', None)
 
